@@ -23,7 +23,7 @@
     iframe {
       border: none;
       width: 100%;
-      height: 240px; /* 👈 Increased height to avoid cut */
+      height: 240px; /* Proper height to avoid cut */
     }
 
     .container {
@@ -69,15 +69,15 @@
 </head>
 <body>
 
-  <!-- 🔴 Live Score -->
+  <!-- 🔴 Live Score Widget -->
   <div class="score-widget">
     <h3>🏏 Live Cricket Score</h3>
     <iframe src="https://widget.crictimes.org/" scrolling="no"></iframe>
   </div>
 
-  <!-- 🧠 Admin Prediction Display -->
+  <!-- 🧠 Prediction Display -->
   <div class="container">
-    <h2>🔮 Today's Match Prediction</h2>
+    <h2>🔮 Today’s Match Prediction</h2>
     <div id="loading">Loading prediction...</div>
     <div id="predictionArea" style="display:none;">
       <div class="prediction">Match: <span id="matchName"></span></div>
@@ -88,7 +88,7 @@
     </div>
   </div>
 
-  <!-- Firebase -->
+  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
     import { getFirestore, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
