@@ -1,60 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Cricket Prediction – Live & Insights</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cricket Prediction – Live & Score</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: Arial, sans-serif;
       background: #111;
       color: #fff;
-      margin: 0;
       padding: 20px;
+      margin: 0;
     }
     h1, h2 {
       text-align: center;
     }
-    .live-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 20px 0;
-    }
-    .live-button button {
-      background: red;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      font-size: 16px;
-      border-radius: 5px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    iframe {
-      width: 100%;
+    .section {
+      margin: 30px auto;
       max-width: 640px;
-      height: 360px;
-      margin: auto;
-      display: block;
-      border: none;
-      margin-top: 20px;
-    }
-    .predictions {
-      margin-top: 30px;
-      background: #222;
+      background: #1c1c1c;
       padding: 20px;
       border-radius: 10px;
     }
-    .prediction {
-      margin-bottom: 20px;
-      border-bottom: 1px solid #444;
-      padding-bottom: 10px;
+    button {
+      background: #e53935;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
     }
-    .team {
-      font-size: 18px;
+    button:hover {
+      background: #c62828;
+    }
+    iframe {
+      width: 100%;
+      height: 360px;
+      border: none;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+    .prediction {
+      border-bottom: 1px solid #444;
+      padding: 10px 0;
     }
     .top-player {
       font-style: italic;
@@ -64,27 +53,27 @@
 </head>
 <body>
 
-  <h1>🏏 Cricket Match Predictions</h1>
+  <h1>🏏 Cricket Predictions & Live</h1>
 
-  <!-- 🔴 Live Test Button -->
-  <div class="live-button">
-    <button onclick="toggleStream()">
-      ▶️ Live Test
-    </button>
+  <!-- 🔴 Live Stream Toggle -->
+  <div class="section">
+    <button onclick="toggleStream()">▶️ Live Test Stream</button>
+    <div id="streamContainer"></div>
   </div>
 
-  <!-- 📺 Live iframe -->
-  <div id="stream" style="display:none;">
-    <iframe src="https://cdn07isb.tamashaweb.com:8087/YlUHeDQb7a/157-3H/playlist.m3u8" allowfullscreen></iframe>
+  <!-- 🟢 Live Score from Crictimes -->
+  <div class="section">
+    <h2>🟢 Live Score</h2>
+    <iframe src="https://widget.crictimes.org" height="200"></iframe>
   </div>
 
-  <!-- 🔮 Predictions -->
-  <div class="predictions" id="predictions">
+  <!-- 🔮 Predictions Section -->
+  <div class="section" id="predictions">
     <h2>🔥 Latest Predictions</h2>
-    <!-- Filled by JS -->
+    <!-- JavaScript will fill predictions here -->
   </div>
 
-  <!-- ✅ Firebase SDK -->
+  <!-- ✅ Firebase -->
   <script src="https://www.gstatic.com/firebasejs/11.10.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore-compat.js"></script>
 
@@ -100,29 +89,39 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // 🔮 Load Predictions
     const predictionBox = document.getElementById("predictions");
-
-    // Fetch predictions
     db.collection("my-predictions")
       .orderBy("timestamp", "desc")
-      .onSnapshot((snapshot) => {
+      .onSnapshot(snapshot => {
         predictionBox.innerHTML = "<h2>🔥 Latest Predictions</h2>";
-        snapshot.forEach((doc) => {
+        snapshot.forEach(doc => {
           const data = doc.data();
           predictionBox.innerHTML += `
             <div class="prediction">
-              <div class="team">${data.match}</div>
-              <div>${data.teamA}: ${data.teamAPercent}% vs ${data.teamB}: ${data.teamBPercent}%</div>
+              <strong>${data.match}</strong><br/>
+              ${data.teamA}: ${data.teamAPercent}% vs ${data.teamB}: ${data.teamBPercent}%<br/>
               <div class="top-player">Top Player: ${data.topPlayer}</div>
             </div>
           `;
         });
       });
 
-    // Live Button toggle
+    // 🎬 Toggle Live Stream with Audio Stop
+    let isStreamOn = false;
     function toggleStream() {
-      const stream = document.getElementById("stream");
-      stream.style.display = stream.style.display === "none" ? "block" : "none";
+      const container = document.getElementById("streamContainer");
+      if (!isStreamOn) {
+        container.innerHTML = `
+          <iframe
+            src="https://html5player.tamashaweb.com/?url=https://cdn07isb.tamashaweb.com:8087/YlUHeDQb7a/157-3H/playlist.m3u8"
+            allowfullscreen>
+          </iframe>`;
+        isStreamOn = true;
+      } else {
+        container.innerHTML = ""; // remove iframe = stop video/audio
+        isStreamOn = false;
+      }
     }
   </script>
 
