@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Cricket Prediction – Live & Score</title>
+  <title>Cricket Predictions – Live</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
@@ -9,8 +9,8 @@
       font-family: Arial, sans-serif;
       background: #111;
       color: #fff;
-      padding: 20px;
       margin: 0;
+      padding: 20px;
     }
     h1, h2 {
       text-align: center;
@@ -30,16 +30,24 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      margin-top: 10px;
     }
     button:hover {
       background: #c62828;
     }
     iframe {
       width: 100%;
-      height: 360px;
+      height: 200px;
       border: none;
       border-radius: 8px;
-      margin-top: 15px;
+      margin-top: 10px;
+    }
+    video {
+      width: 100%;
+      height: 360px;
+      border-radius: 8px;
+      background: black;
+      margin-top: 10px;
     }
     .prediction {
       border-bottom: 1px solid #444;
@@ -55,29 +63,32 @@
 
   <h1>🏏 Cricket Predictions & Live</h1>
 
-  <!-- 🔴 Live Stream Toggle -->
+  <!-- 🔴 Live Stream Section -->
   <div class="section">
-    <button onclick="toggleStream()">▶️ Live Test Stream</button>
-    <div id="streamContainer"></div>
+    <h2>📺 Live Stream</h2>
+    <video id="liveVideo" controls></video>
+    <button onclick="stopStream()">⏹ Stop Stream</button>
   </div>
 
-  <!-- 🟢 Live Score from Crictimes -->
+  <!-- 🟢 Live Score Section -->
   <div class="section">
     <h2>🟢 Live Score</h2>
-    <iframe src="https://widget.crictimes.org" height="200"></iframe>
+    <iframe src="https://widget.crictimes.org"></iframe>
   </div>
 
   <!-- 🔮 Predictions Section -->
   <div class="section" id="predictions">
     <h2>🔥 Latest Predictions</h2>
-    <!-- JavaScript will fill predictions here -->
+    <!-- Filled by Firebase -->
   </div>
 
-  <!-- ✅ Firebase -->
+  <!-- 🔌 Firebase + HLS.js -->
   <script src="https://www.gstatic.com/firebasejs/11.10.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
   <script>
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyCutZ4-S27z8DzRQQnREMDLKdP-b3zV95s",
       authDomain: "cricketpredition-5a66d.firebaseapp.com",
@@ -89,7 +100,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // 🔮 Load Predictions
+    // Predictions Display
     const predictionBox = document.getElementById("predictions");
     db.collection("my-predictions")
       .orderBy("timestamp", "desc")
@@ -107,22 +118,38 @@
         });
       });
 
-    // 🎬 Toggle Live Stream with Audio Stop
-    let isStreamOn = false;
-    function toggleStream() {
-      const container = document.getElementById("streamContainer");
-      if (!isStreamOn) {
-        container.innerHTML = `
-          <iframe
-            src="https://html5player.tamashaweb.com/?url=https://cdn07isb.tamashaweb.com:8087/YlUHeDQb7a/157-3H/playlist.m3u8"
-            allowfullscreen>
-          </iframe>`;
-        isStreamOn = true;
-      } else {
-        container.innerHTML = ""; // remove iframe = stop video/audio
-        isStreamOn = false;
+    // 🔴 HLS Stream
+    const video = document.getElementById('liveVideo');
+    const streamURL = "https://cdn07isb.tamashaweb.com:8087/YlUHeDQb7a/157-3H/playlist.m3u8";
+    let hls;
+
+    function startStream() {
+      if (Hls.isSupported()) {
+        hls = new Hls();
+        hls.loadSource(streamURL);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, function () {
+          video.play();
+        });
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = streamURL;
+        video.addEventListener('loadedmetadata', function () {
+          video.play();
+        });
       }
     }
+
+    function stopStream() {
+      if (hls) {
+        hls.destroy();
+        hls = null;
+        video.pause();
+        video.src = "";
+      }
+    }
+
+    // Auto Start Stream
+    startStream();
   </script>
 
 </body>
