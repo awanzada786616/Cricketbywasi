@@ -1,115 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JazzTV Channel Fetcher</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0e0e0e;
-      color: #f1f1f1;
-      text-align: center;
-      padding: 20px;
-    }
-    h1 {
-      color: #00c3ff;
-    }
-    input, button {
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: none;
-      margin: 5px;
-    }
-    input {
-      width: 200px;
-    }
-    button {
-      background-color: #00c3ff;
-      color: #fff;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    button:hover {
-      background-color: #008ecb;
-    }
-    pre {
-      text-align: left;
-      background: #1b1b1b;
-      color: #00ff95;
-      padding: 10px;
-      border-radius: 8px;
-      overflow-x: auto;
-      max-width: 600px;
-      margin: 20px auto;
-    }
-    video {
-      width: 80%;
-      max-width: 600px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px #00c3ff;
-      margin-top: 20px;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ehd-e-Wafa All Episodes — Wasi TV</title>
+<style>
+  body {
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    background: #f5f7fb;
+    color: #1b1b1b;
+  }
+  header {
+    text-align: center;
+    background: linear-gradient(135deg, #1d3557, #457b9d);
+    color: #fff;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  h1 { margin: 0; font-size: 1.8rem; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+    gap: 20px;
+    padding: 30px;
+    box-sizing: border-box;
+  }
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    overflow: hidden;
+    position: relative;
+    transition: transform .25s;
+  }
+  .card:hover { transform: translateY(-4px); }
+  .thumb {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #000 url("https://i.postimg.cc/BvgT2VzC/images-3-4.jpg") center/cover no-repeat;
+    position: relative;
+  }
+  .loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+  }
+  @keyframes spin {
+    0% { transform: translate(-50%,-50%) rotate(0deg); }
+    100% { transform: translate(-50%,-50%) rotate(360deg); }
+  }
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: none;
+    border-radius: 0;
+  }
+  .info {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .title { font-weight: 600; }
+  button.playbtn {
+    background: #e63946;
+    border: none;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background .2s;
+  }
+  button.playbtn:hover { background: #d62839; }
+</style>
 </head>
 <body>
-  <h1>🎬 JazzTV Channel Fetcher</h1>
-  <p>Enter Channel ID below and click “Get Channel URL”</p>
+<header><h1>🎬 Ehd-e-Wafa All Episodes</h1></header>
 
-  <input type="text" id="channelId" placeholder="Enter Channel ID" value="1" />
-  <button id="fetchBtn">Get Channel URL</button>
+<div class="grid">
+  <!-- episodes generated below -->
+</div>
 
-  <div id="resultArea">
-    <pre id="output">Waiting for request...</pre>
-    <div id="videoContainer"></div>
-  </div>
+<script>
+const episodes = [
+  "Gaxsb9Uvwt0","Oo-LW5HfH7w","itcyZWols_Q","YoFF7wkpLTY","FcjQXNf_RO0","bIdMbSV5OZo",
+  "q2V8OswrBrY","WxFMaNnCeBs","uDPuHxIRnJk","lY0uBX08420","mLTcw-is_kU","XYmtOcS4s7Y",
+  "57j605955UQ","jEkjPhZ7GXo","IEdUyyzEmqo","9-UdZF47GpQ","lmcirpqqY48","Wg_OnBdF2E4",
+  "Zn33eoQa2pg","PdvYRzHgMX0","8Q_CFvrm3vI","va8MDFFeXV8","Jvmgr8R7QGA","r9GHXVoxRVs",
+  "LGGN_HLJ2g0"
+];
 
-  <script>
-    const API_URL = "https://jazztv.pk/alpha/api_gateway/index.php/v3/media/get-channel-url";
+const grid = document.querySelector(".grid");
 
-    document.getElementById("fetchBtn").addEventListener("click", async () => {
-      const channelId = document.getElementById("channelId").value.trim();
-      const output = document.getElementById("output");
-      const videoContainer = document.getElementById("videoContainer");
-      output.textContent = "Fetching...";
-      videoContainer.innerHTML = "";
+episodes.forEach((id, i) => {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `
+    <div class="thumb">
+      <div class="loader"></div>
+      <iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+              src="https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1"></iframe>
+    </div>
+    <div class="info">
+      <span class="title">Episode ${i+1}</span>
+      <button class="playbtn">Play</button>
+    </div>`;
+  grid.appendChild(card);
+});
 
-      try {
-        const res = await fetch(API_URL, {
-          method: "POST",
-          headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            channel_id: channelId
-          })
-        });
-
-        const text = await res.text();
-        output.textContent = text;
-
-        // Try parse JSON if possible
-        let data = {};
-        try { data = JSON.parse(text); } catch {}
-
-        // Extract stream URL (adjust according to actual API response)
-        const url = data.url || data.stream_url || (data.data && data.data.url);
-        if (url) {
-          videoContainer.innerHTML = `
-            <video controls autoplay>
-              <source src="${url}" type="application/x-mpegURL">
-              Your browser does not support the video tag.
-            </video>
-          `;
-        } else {
-          videoContainer.innerHTML = `<p>No playable URL found in API response.</p>`;
-        }
-      } catch (err) {
-        output.textContent = "Error: " + err.message;
-      }
-    });
-  </script>
+// play button logic
+document.querySelectorAll(".card").forEach(card=>{
+  const btn = card.querySelector(".playbtn");
+  const loader = card.querySelector(".loader");
+  const iframe = card.querySelector("iframe");
+  btn.addEventListener("click",()=>{
+    btn.style.display="none";
+    loader.style.display="block";
+    iframe.style.display="block";
+    iframe.addEventListener("load",()=>loader.style.display="none",{once:true});
+  });
+});
+</script>
 </body>
 </html>
