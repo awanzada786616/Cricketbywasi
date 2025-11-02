@@ -1,46 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ehd-e-Wafa Episode 1</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ehd-e-Wafa - All Episodes</title>
 
   <style>
     body {
-      background: #0f0f0f;
+      background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
       font-family: 'Poppins', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
       margin: 0;
-      color: #fff;
+      padding: 0;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
     }
 
-    .video-container {
-      position: relative;
+    h1 {
+      margin: 20px 0;
+      text-align: center;
+      color: #00bcd4;
+      letter-spacing: 1px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       width: 90%;
-      max-width: 720px;
-      background: #1a1a1a;
+      max-width: 900px;
+      background: rgba(255, 255, 255, 0.05);
       border-radius: 16px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+      padding: 20px;
+    }
+
+    .video-box {
+      position: relative;
+      width: 100%;
+      background: #000;
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
     }
 
     iframe {
       width: 100%;
-      height: 400px;
+      height: 420px;
       border: none;
-      display: none; /* hide until loaded */
-      border-radius: 16px;
+      display: none;
     }
 
     .spinner {
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 60px;
-      height: 60px;
+      width: 70px;
+      height: 70px;
       border: 6px solid #ccc;
       border-top-color: #00bcd4;
       border-radius: 50%;
@@ -49,9 +66,33 @@
     }
 
     @keyframes spin {
-      to {
-        transform: translate(-50%, -50%) rotate(360deg);
-      }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .episode-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 12px;
+      margin-top: 25px;
+      width: 100%;
+    }
+
+    .episode-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 10px 0;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .episode-btn:hover {
+      background: #00bcd4;
+      color: black;
+      transform: scale(1.05);
     }
 
     .controls {
@@ -60,51 +101,58 @@
       align-items: center;
       background: rgba(0, 0, 0, 0.6);
       padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
     }
 
-    button {
+    button.control {
       background: none;
       border: none;
       color: white;
-      font-size: 18px;
+      font-size: 20px;
       cursor: pointer;
     }
 
-    button:hover {
+    button.control:hover {
       color: #00bcd4;
     }
   </style>
 </head>
 <body>
-  <div class="video-container">
-    <div class="spinner" id="spinner"></div>
-    <iframe
-      id="ytplayer"
-      src="https://www.youtube-nocookie.com/embed/LnWKxREc8hs?enablejsapi=1&rel=0&modestbranding=1"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowfullscreen
-    ></iframe>
+  <h1>Ehd-e-Wafa - All Episodes</h1>
+  <div class="container">
+    <div class="video-box">
+      <div class="spinner" id="spinner"></div>
+      <iframe id="ytplayer"
+        src="https://www.youtube-nocookie.com/embed/LnWKxREc8hs?enablejsapi=1&rel=0&modestbranding=1"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen></iframe>
+    </div>
 
     <div class="controls">
-      <button id="playPause">▶️ / ⏸️</button>
-      <button id="muteUnmute">🔇 / 🔊</button>
-      <button id="fullscreen">⛶</button>
+      <button class="control" id="playPause">▶️ / ⏸️</button>
+      <button class="control" id="muteUnmute">🔇 / 🔊</button>
+      <button class="control" id="fullscreen">⛶</button>
+    </div>
+
+    <div class="episode-list">
+      <div class="episode-btn" data-video="LnWKxREc8hs">Episode 1</div>
+      <div class="episode-btn" data-video="abcd1234xyz">Episode 2</div>
+      <div class="episode-btn" data-video="efgh5678uvw">Episode 3</div>
+      <div class="episode-btn" data-video="ijkl9999aaa">Episode 4</div>
     </div>
   </div>
 
   <script>
     let player;
 
-    // Load YouTube Iframe API
     const tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
     document.body.appendChild(tag);
 
     function onYouTubeIframeAPIReady() {
       player = new YT.Player('ytplayer', {
-        events: {
-          'onReady': onPlayerReady
-        }
+        events: { 'onReady': onPlayerReady }
       });
     }
 
@@ -113,6 +161,7 @@
       document.getElementById('ytplayer').style.display = 'block';
     }
 
+    // Custom Controls
     document.getElementById('playPause').addEventListener('click', () => {
       const state = player.getPlayerState();
       if (state === YT.PlayerState.PLAYING) player.pauseVideo();
@@ -127,6 +176,20 @@
     document.getElementById('fullscreen').addEventListener('click', () => {
       const iframe = document.getElementById('ytplayer');
       if (iframe.requestFullscreen) iframe.requestFullscreen();
+    });
+
+    // Episode Button Click
+    document.querySelectorAll('.episode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const videoId = btn.getAttribute('data-video');
+        document.getElementById('spinner').style.display = 'block';
+        document.getElementById('ytplayer').style.display = 'none';
+        player.loadVideoById(videoId);
+        setTimeout(() => {
+          document.getElementById('spinner').style.display = 'none';
+          document.getElementById('ytplayer').style.display = 'block';
+        }, 2000);
+      });
     });
   </script>
 </body>
