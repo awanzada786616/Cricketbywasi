@@ -5,9 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ehd-e-Wafa - All Episodes</title>
 
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
   <style>
     body {
-      background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+      background: radial-gradient(circle at top, #0a0a0a, #1c1c1c);
       font-family: 'Poppins', sans-serif;
       margin: 0;
       padding: 0;
@@ -32,9 +35,10 @@
       width: 90%;
       max-width: 900px;
       background: rgba(255, 255, 255, 0.05);
-      border-radius: 16px;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+      border-radius: 20px;
+      box-shadow: 0 0 25px rgba(0, 188, 212, 0.2);
       padding: 20px;
+      backdrop-filter: blur(10px);
     }
 
     .video-box {
@@ -50,6 +54,7 @@
       height: 420px;
       border: none;
       display: none;
+      border-radius: 12px;
     }
 
     .spinner {
@@ -58,7 +63,7 @@
       left: 50%;
       width: 70px;
       height: 70px;
-      border: 6px solid #ccc;
+      border: 6px solid #333;
       border-top-color: #00bcd4;
       border-radius: 50%;
       animation: spin 1s linear infinite;
@@ -67,6 +72,35 @@
 
     @keyframes spin {
       to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 15px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 12px;
+      border-radius: 12px;
+      width: fit-content;
+    }
+
+    .control-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #00bcd4;
+      font-size: 22px;
+      padding: 10px 14px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .control-btn:hover {
+      background: #00bcd4;
+      color: black;
+      box-shadow: 0 0 15px #00bcd4;
+      transform: scale(1.1);
     }
 
     .episode-list {
@@ -95,27 +129,6 @@
       transform: scale(1.05);
     }
 
-    .controls {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 8px;
-    }
-
-    button.control {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 20px;
-      cursor: pointer;
-    }
-
-    button.control:hover {
-      color: #00bcd4;
-    }
   </style>
 </head>
 <body>
@@ -130,9 +143,9 @@
     </div>
 
     <div class="controls">
-      <button class="control" id="playPause">▶️ / ⏸️</button>
-      <button class="control" id="muteUnmute">🔇 / 🔊</button>
-      <button class="control" id="fullscreen">⛶</button>
+      <button class="control-btn" id="playPause"><i class="fa-solid fa-play"></i></button>
+      <button class="control-btn" id="muteUnmute"><i class="fa-solid fa-volume-high"></i></button>
+      <button class="control-btn" id="fullscreen"><i class="fa-solid fa-expand"></i></button>
     </div>
 
     <div class="episode-list">
@@ -161,16 +174,30 @@
       document.getElementById('ytplayer').style.display = 'block';
     }
 
-    // Custom Controls
-    document.getElementById('playPause').addEventListener('click', () => {
+    const playPauseBtn = document.getElementById('playPause');
+    const muteBtn = document.getElementById('muteUnmute');
+
+    playPauseBtn.addEventListener('click', () => {
       const state = player.getPlayerState();
-      if (state === YT.PlayerState.PLAYING) player.pauseVideo();
-      else player.playVideo();
+      const icon = playPauseBtn.querySelector('i');
+      if (state === YT.PlayerState.PLAYING) {
+        player.pauseVideo();
+        icon.classList.replace('fa-pause', 'fa-play');
+      } else {
+        player.playVideo();
+        icon.classList.replace('fa-play', 'fa-pause');
+      }
     });
 
-    document.getElementById('muteUnmute').addEventListener('click', () => {
-      if (player.isMuted()) player.unMute();
-      else player.mute();
+    muteBtn.addEventListener('click', () => {
+      const icon = muteBtn.querySelector('i');
+      if (player.isMuted()) {
+        player.unMute();
+        icon.classList.replace('fa-volume-xmark', 'fa-volume-high');
+      } else {
+        player.mute();
+        icon.classList.replace('fa-volume-high', 'fa-volume-xmark');
+      }
     });
 
     document.getElementById('fullscreen').addEventListener('click', () => {
@@ -178,7 +205,7 @@
       if (iframe.requestFullscreen) iframe.requestFullscreen();
     });
 
-    // Episode Button Click
+    // Episode buttons
     document.querySelectorAll('.episode-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const videoId = btn.getAttribute('data-video');
