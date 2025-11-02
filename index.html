@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ehd-e-Wafa - All Episodes</title>
-
-<!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
 <style>
@@ -18,7 +16,6 @@
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    padding-bottom: 40px;
   }
 
   h1 {
@@ -49,7 +46,7 @@
     width: 100%;
     height: 420px;
     border: none;
-    display: none;
+    border-radius: 12px;
   }
 
   .spinner {
@@ -63,11 +60,10 @@
     border-radius: 50%;
     animation: spin 1s linear infinite;
     transform: translate(-50%, -50%);
+    display: none;
   }
 
-  @keyframes spin {
-    to { transform: translate(-50%, -50%) rotate(360deg); }
-  }
+  @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
 
   .controls {
     display: flex;
@@ -107,10 +103,7 @@
     transition: 0.3s;
   }
 
-  .next-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 15px #00bcd4;
-  }
+  .next-btn:hover { transform: scale(1.05); box-shadow: 0 0 15px #00bcd4; }
 
   .episode-list {
     display: grid;
@@ -146,7 +139,7 @@
 <div class="container">
   <div class="video-box">
     <div class="spinner" id="spinner"></div>
-    <iframe id="ytplayer" allowfullscreen></iframe>
+    <iframe id="ytplayer" src="https://www.youtube.com/embed/LnWKxREc8hs?enablejsapi=1&rel=0&modestbranding=1" allowfullscreen></iframe>
   </div>
 
   <div class="controls">
@@ -160,62 +153,43 @@
   <div class="episode-list" id="episodeList"></div>
 </div>
 
+<!-- Load YouTube API -->
+<script src="https://www.youtube.com/iframe_api"></script>
+
 <script>
 const episodes = [
-  "LnWKxREc8hs", // 1
-  "0jYlVih0dvA", // 2
-  "MpVrqhIJnmg", // 3
-  "w30TBwftcck", // 4
-  "6WiCRzT59zQ", // 5
-  "V9Lx3-28BMI", // 6
-  "Tf_lZR-mgEw", // 7
-  "ZqfaUdOqR_I", // 8
-  "Pfq9eYyAGN0", // 9
-  "6mF16IYang4", // 10
-  "A8yvDOqaXvE", // 11
-  "j12z2ZPMLPA", // 12
-  "7UOoFVLSxaY", // 13
-  "Bu412i99H9A", // 14
-  "2XdbfKG68X4", // 15
-  "DyG4ioCN9QU", // 16
-  "gHWPcXDBYvY", // 17
-  "YLhJZ_ce98s", // 18
-  "UK79eaZr1eM", // 19
-  "r19Jwsgy6Hg", // 20
-  "nww2eVdxzcA", // 21
-  "r4Jk2rMGXZA", // 22
-  "ev3cDksfeZM", // 23
-  "_EkZyhk07BQ", // 24
-  "7wYnw3yUI3k"  // 25 (last)
+  "LnWKxREc8hs", "0jYlVih0dvA", "MpVrqhIJnmg", "w30TBwftcck", "6WiCRzT59zQ", "V9Lx3-28BMI",
+  "Tf_lZR-mgEw", "ZqfaUdOqR_I", "Pfq9eYyAGN0", "6mF16IYang4", "A8yvDOqaXvE", "j12z2ZPMLPA",
+  "7UOoFVLSxaY", "Bu412i99H9A", "2XdbfKG68X4", "DyG4ioCN9QU", "gHWPcXDBYvY", "YLhJZ_ce98s",
+  "UK79eaZr1eM", "r19Jwsgy6Hg", "nww2eVdxzcA", "r4Jk2rMGXZA", "ev3cDksfeZM", "_EkZyhk07BQ", "7wYnw3yUI3k"
 ];
 
 let currentIndex = 0;
 let player;
 
-const tag = document.createElement('script');
-tag.src = "https://www.youtube.com/iframe_api";
-document.body.appendChild(tag);
-
 function onYouTubeIframeAPIReady() {
   player = new YT.Player('ytplayer', {
-    height: '420',
-    width: '100%',
-    videoId: episodes[currentIndex],
-    playerVars: { 'autoplay': 0, 'controls': 0, 'rel': 0 },
-    events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
+    events: {
+      'onReady': onPlayerReady,
+      'onStateChange': onPlayerStateChange
+    }
   });
 }
 
 function onPlayerReady() {
-  document.getElementById('spinner').style.display = 'none';
-  document.getElementById('ytplayer').style.display = 'block';
   updateEpisodeButtons();
 }
 
 function onPlayerStateChange(event) {
-  if (event.data === YT.PlayerState.ENDED) {
-    playNextEpisode();
-  }
+  if (event.data === YT.PlayerState.ENDED) playNextEpisode();
+}
+
+function loadEpisode() {
+  const spinner = document.getElementById('spinner');
+  spinner.style.display = 'block';
+  player.loadVideoById(episodes[currentIndex]);
+  setTimeout(() => spinner.style.display = 'none', 1500);
+  updateEpisodeButtons();
 }
 
 function playNextEpisode() {
@@ -223,48 +197,35 @@ function playNextEpisode() {
     currentIndex++;
     loadEpisode();
   } else {
-    alert("🎉 You’ve finished the last episode!");
+    alert("🎉 You have finished the last episode!");
   }
-}
-
-function loadEpisode() {
-  document.getElementById('spinner').style.display = 'block';
-  document.getElementById('ytplayer').style.display = 'none';
-  player.loadVideoById(episodes[currentIndex]);
-  setTimeout(() => {
-    document.getElementById('spinner').style.display = 'none';
-    document.getElementById('ytplayer').style.display = 'block';
-  }, 2000);
-  updateEpisodeButtons();
 }
 
 document.getElementById('nextEpisode').addEventListener('click', playNextEpisode);
 
-const episodeList = document.getElementById('episodeList');
-episodes.forEach((id, index) => {
+// build episode buttons
+const list = document.getElementById('episodeList');
+episodes.forEach((id, i) => {
   const btn = document.createElement('div');
   btn.className = 'episode-btn';
-  btn.innerText = `Episode ${index + 1}`;
-  btn.onclick = () => {
-    currentIndex = index;
+  btn.textContent = `Episode ${i + 1}`;
+  btn.addEventListener('click', () => {
+    currentIndex = i;
     loadEpisode();
-  };
-  episodeList.appendChild(btn);
+  });
+  list.appendChild(btn);
 });
 
 function updateEpisodeButtons() {
-  document.querySelectorAll('.episode-btn').forEach((btn, i) => {
-    btn.classList.toggle('active', i === currentIndex);
+  document.querySelectorAll('.episode-btn').forEach((b, i) => {
+    b.classList.toggle('active', i === currentIndex);
   });
 }
 
 // Controls
-const playPauseBtn = document.getElementById('playPause');
-const muteBtn = document.getElementById('muteUnmute');
-
-playPauseBtn.addEventListener('click', () => {
+document.getElementById('playPause').addEventListener('click', () => {
+  const icon = playPause.querySelector('i');
   const state = player.getPlayerState();
-  const icon = playPauseBtn.querySelector('i');
   if (state === YT.PlayerState.PLAYING) {
     player.pauseVideo();
     icon.classList.replace('fa-pause', 'fa-play');
@@ -274,8 +235,8 @@ playPauseBtn.addEventListener('click', () => {
   }
 });
 
-muteBtn.addEventListener('click', () => {
-  const icon = muteBtn.querySelector('i');
+document.getElementById('muteUnmute').addEventListener('click', () => {
+  const icon = muteUnmute.querySelector('i');
   if (player.isMuted()) {
     player.unMute();
     icon.classList.replace('fa-volume-xmark', 'fa-volume-high');
