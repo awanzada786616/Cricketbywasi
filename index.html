@@ -1,396 +1,158 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Ehd-e-Wafa — Episodes</title>
-
-  <!-- hls.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.0/dist/hls.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ehd-e-Wafa Episode 1</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
   <style>
-    :root{
-      --bg:#0b0e13;
-      --card:#0f1720;
-      --muted:#95a0ad;
-      --accent:#e50914; /* red accent */
-      --glass: rgba(255,255,255,0.04);
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: linear-gradient(180deg,#030409 0%, #0b0e13 100%);
-      color: #e6eef6;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e3a8a);
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
 
-    header{
-      padding:20px 24px;
-      display:flex;
-      align-items:center;
-      gap:16px;
-      border-bottom:1px solid rgba(255,255,255,0.03);
-      background: linear-gradient(90deg, rgba(0,0,0,0.25), transparent);
-    }
-    .logo {
-      display:flex; gap:12px; align-items:center;
-    }
-    .logo .dot{
-      width:42px; height:42px; border-radius:8px; background:var(--accent); display:flex;align-items:center;justify-content:center;font-weight:700;
-      box-shadow:0 6px 18px rgba(229,9,20,0.14);
-    }
-    header h1{font-size:1.1rem;margin:0;font-weight:600}
-    header p{margin:0;color:var(--muted);font-size:0.9rem}
-
-    .layout{
-      display:grid;
-      grid-template-columns: 360px 1fr;
-      gap:20px;
-      padding:22px;
+    .player-container {
+      width: 90%;
+      max-width: 850px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
     }
 
-    /* left: episodes list */
-    .panel{
-      background: linear-gradient(180deg,var(--card), rgba(255,255,255,0.02));
-      border-radius:12px;
-      padding:14px;
-      box-shadow: 0 8px 30px rgba(2,6,23,0.6);
-      max-height: calc(100vh - 120px);
-      overflow:auto;
-    }
-    .search {
-      display:flex; gap:8px; margin-bottom:12px;
-    }
-    .search input{
-      flex:1;background:var(--glass);border:1px solid rgba(255,255,255,0.03);padding:10px;border-radius:8px;color:inherit;
-    }
-    .ep-list{display:flex;flex-direction:column;gap:10px}
-    .ep-btn{
-      display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;background:linear-gradient(180deg,transparent, rgba(255,255,255,0.02));
-      cursor:pointer;border:1px solid rgba(255,255,255,0.02);
-      transition:transform .12s, box-shadow .12s, background .12s;
-    }
-    .ep-btn:hover{transform:translateY(-4px); box-shadow:0 10px 30px rgba(2,6,23,0.6)}
-    .thumb-small{width:84px;height:48px;border-radius:6px;background-size:cover;background-position:center;flex-shrink:0}
-    .ep-meta{flex:1;display:flex;flex-direction:column}
-    .ep-title{font-weight:600;font-size:0.98rem}
-    .ep-sub{color:var(--muted);font-size:0.85rem;margin-top:4px}
-
-    /* right: player area */
-    .player-card{
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
-      border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:12px;
-      box-shadow: 0 8px 30px rgba(2,6,23,0.6);
-    }
-    .player-wrap{
-      position:relative;
-      background:#000;
-      border-radius:10px;
-      overflow:hidden;
-      aspect-ratio: 16/9;
-      max-height: 65vh;
-    }
-    video, .video-iframe{
-      width:100%;height:100%;display:block;background:#000;outline:none;
+    h1 {
+      text-align: center;
+      color: #60a5fa;
+      font-size: 2rem;
+      margin: 20px 0;
     }
 
-    /* custom controls */
-    .controls{
-      display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;background:rgba(255,255,255,0.02);
+    .video-wrapper {
+      position: relative;
     }
-    .bigplay{
-      background:linear-gradient(90deg,var(--accent),#ff4b4b);border:none;color:white;padding:10px 14px;border-radius:8px;font-weight:700;cursor:pointer;
-      box-shadow:0 6px 18px rgba(229,9,20,0.12)
-    }
-    .smallbtn{background:transparent;border:1px solid rgba(255,255,255,0.05);padding:8px;border-radius:8px;color:inherit;cursor:pointer}
-    .time{color:var(--muted);font-size:0.95rem}
-    .range{flex:1}
-    input[type="range"]{width:100%}
 
-    .right-meta{display:flex;flex-direction:column;gap:8px}
-    .episode-title{font-weight:700;font-size:1.15rem}
-    .episode-desc{color:var(--muted);font-size:0.95rem}
-
-    /* loader */
-    .spinner{
-      position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;border:6px solid rgba(255,255,255,0.08);border-top-color:var(--accent);animation:spin 1s linear infinite;z-index:20;
+    video {
+      width: 100%;
+      border-radius: 12px;
+      display: block;
     }
-    @keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
 
-    /* responsive */
-    @media (max-width:980px){
-      .layout{grid-template-columns: 1fr; padding:14px}
-      .panel{order:2}
-      .player-card{order:1}
+    /* Loading Spinner */
+    .spinner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      border: 6px solid rgba(255, 255, 255, 0.2);
+      border-top-color: #60a5fa;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      display: none;
     }
-    /* scrollbar small */
-    .panel::-webkit-scrollbar{width:8px}
-    .panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.04);border-radius:8px}
+
+    @keyframes spin {
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 10px 15px;
+    }
+
+    .btn {
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .btn:hover {
+      color: #60a5fa;
+    }
+
+    input[type="range"] {
+      width: 100px;
+      cursor: pointer;
+      accent-color: #60a5fa;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      color: #a5b4fc;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
+  <div class="player-container">
+    <h1>🎬 Ehd-e-Wafa – Episode 1</h1>
 
-<header>
-  <div class="logo">
-    <div class="dot">W</div>
-    <div>
-      <h1>Ehd-e-Wafa — All Episodes</h1>
-      <p>Dark mode player • Click an episode to play</p>
+    <div class="video-wrapper">
+      <div class="spinner" id="spinner"></div>
+      <video id="videoPlayer" poster="https://i.postimg.cc/BvgT2VzC/images-3-4.jpg" preload="none">
+        <source src="https://www.youtube-nocookie.com/embed/LnWKxREc8hs" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
     </div>
+
+    <div class="controls">
+      <i class="fa-solid fa-play btn" id="playPause"></i>
+      <i class="fa-solid fa-volume-high btn" id="muteBtn"></i>
+      <input type="range" id="volumeControl" min="0" max="1" step="0.05" value="1" />
+    </div>
+
+    <footer>© 2025 DramaStream | Ehd-e-Wafa Episode 1</footer>
   </div>
-</header>
 
-<div class="layout">
-  <!-- Episodes panel -->
-  <aside class="panel">
-    <div class="search">
-      <input id="search" type="search" placeholder="Search episode # or title (optional)" />
-      <button id="shuffle" class="smallbtn" title="Shuffle">Shuffle</button>
-    </div>
+  <script>
+    const video = document.getElementById("videoPlayer");
+    const playPause = document.getElementById("playPause");
+    const muteBtn = document.getElementById("muteBtn");
+    const volumeControl = document.getElementById("volumeControl");
+    const spinner = document.getElementById("spinner");
 
-    <div class="ep-list" id="epList"></div>
-  </aside>
+    // Loading spinner
+    video.addEventListener("waiting", () => spinner.style.display = "block");
+    video.addEventListener("playing", () => spinner.style.display = "none");
 
-  <!-- Player -->
-  <main class="player-card">
-    <div class="player-wrap" id="playerWrap">
-      <div id="spinner" class="spinner" style="display:none"></div>
+    // Play / Pause toggle
+    playPause.addEventListener("click", () => {
+      if (video.paused) {
+        video.play();
+        playPause.classList.replace("fa-play", "fa-pause");
+      } else {
+        video.pause();
+        playPause.classList.replace("fa-pause", "fa-play");
+      }
+    });
 
-      <!-- HTML5 video element (used by HLS.js) -->
-      <video id="video" controls crossorigin playsinline preload="metadata" poster="https://i.postimg.cc/BvgT2VzC/images-3-4.jpg"></video>
+    // Mute / Unmute
+    muteBtn.addEventListener("click", () => {
+      video.muted = !video.muted;
+      muteBtn.classList.toggle("fa-volume-xmark", video.muted);
+      muteBtn.classList.toggle("fa-volume-high", !video.muted);
+    });
 
-      <!-- Optional iframe fallback (not used by default) -->
-      <iframe id="ytFrame" class="video-iframe" style="display:none" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-    </div>
-
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-      <div class="right-meta">
-        <div class="episode-title" id="nowTitle">Select an episode to play</div>
-        <div class="episode-desc" id="nowDesc">Poster will show until you press play.</div>
-      </div>
-
-      <div style="display:flex;align-items:center;gap:8px">
-        <button id="playPause" class="bigplay">Play ▶</button>
-        <button id="muteBtn" class="smallbtn">🔊</button>
-      </div>
-    </div>
-
-    <div class="controls" style="margin-top:6px">
-      <div class="time" id="currentTime">00:00</div>
-      <input class="range" id="seek" type="range" min="0" max="100" step="0.1" value="0">
-      <div class="time" id="duration">00:00</div>
-      <input id="vol" type="range" min="0" max="1" step="0.01" value="1" style="width:120px">
-      <button id="fsBtn" class="smallbtn">⤢</button>
-    </div>
-  </main>
-</div>
-
-<script>
-/* ============================
-   Replaceable episodes array
-   Each item: {title, src, type}
-   type: "hls" (m3u8) or "mp4" or "iframe" (youtube)
-   ============================ */
-const episodes = [
-  { title: "Episode 1", src: "https://vod3.cf.dmcdn.net/sec2(agPzgOnw1JP3UOPT-ai9NS1r7ugkW45rEL-ZiBho81HM6wpZFueIzwGYG-0xzSctSoFRhWGqFmYG3w_rXX9nyOsb9dZrOCCDbkcWeldeEY08cTkak82ahEOYy_gr7DOt8JSeKgiOysTKcuv8CZNH0Axdfa7pdlTN8V39QQ9fx3urfmbqPYpEWzGx1YvJ5KqY)/video/427/379/578973724_mp4_h264_aac_hq_3.m3u8#cell=cf3", type: "hls" },
-  { title: "Episode 2", src: "https://vod3.cf.dmcdn.net/sec2(sCwM-dBosU50Q0Zo3FzZAmbp-_-58fEnU6GZOCZIJzdNktdps3GLtDwoC8gsMkqcUgNt5lW1MGRQnDHfaLhNvXI8IgUrqfWK7NOYn6nQaFES9dp9L4YM79Jspq6kI6DCrJMM1Y6CxzPgdcGAmfiMzuo3Om9UGFdZT-uNCyGyIM9_xIeASzIhLSvz_TCcoFsn)/video/227/379/578973722_mp4_h264_aac_hq_3.m3u8#cell=cf3", type: "hls" },
-  { title: "Episode 3", src: "https://vod3.cf.dmcdn.net/sec2(bwX6ROtDPH2yFWnlxMdkEA0o4BwdKsfIE8a9PFP2TYluNFKV0aKtNVGQ5KpGhGkK5fNedTbsNPuLSdT6tb6OqJfQUDaf4PtEZ0nUepVSGReRHNX98O0VCOegw7A1Opqs_BTE1SmrX57Wua8lNB1UOJDxOsbWhGWkDTzjq73bx9KvdetHSOEORCwBJuIifEFq)/video/817/379/578973718_mp4_h264_aac_hq_3.m3u8#cell=cf3", type: "hls" },
-  { title: "Episode 4", src: "https://vod3.cf.dmcdn.net/sec2(8DzoYhS6XkJMRjr2GDSEgONadAa-6X0xSJfsGhp1hzT72x34YLq4hZhbaF5-LaXjayEXd0lcJ-zBJ-gBm2qf47QtBGNquCV2UK5V1IMH1LFI_tssU_yF08Te_kLO8ySMJu1f7a8Xxfu1frgDKduQpwa82ZaZu4BJWH6YKOoUFYyPTPMGFCdnaDLIIh1lhBFz)/video/027/379/578973720_mp4_h264_aac_hq_3.m3u8#cell=cf3", type: "hls" },
-  { title: "Episode 5", src: "https://vod3.cf.dmcdn.net/sec2(ilLyqMQ-8MVQDORDHXawg_IQukB4SqtmvMu1qg02JMVvksYqIjFIldKuIYbALt7kIQhoqMAfnATYZJN5XV4kkXeT8vVHw35U2jKinoclD7PCshT4zltM8Nn7RuBAjxYCQ3BV-lK-3hbeCD1fxTZcd-_et7FUeLZj2EMvVxGcqbD40zeLEra7eKK3dG09fzE0)/video/876/348/578843678_mp4_h264_aac_hq_3.m3u8#cell=cf3", type: "hls" },
-  { title: "Episode 6", src: "https://vod3.cf.dmcdn.net/sec2(EaZ5Q4hCrrVFR5NgvtAYi5TleqD4ky5M5wAQGwkRIn8dYYwLwCvxYXclnI-4AcHvdVjLqBq2jxfWgBaeaXllqzroYw4rIBj6Xa_mnFqM7CiyWf4z3940KLnsXsuaypGXRzkLX9s5lVOZeS4pLf85YCEljB-sqxwOvojYX2dlBsDuqpW7Y13pcF60tB-p13KK)/video/076/348/578843670_mp4_h264_aac_hq_3.m3u8#cell=cf3", type: "hls" },
-  { title: "Episode 7", src: "https://vod3.cf.dmcdn.net/sec2(Uz9As8HifR3F5T6TMiSaJF3m4cAzws8Qs_KfcZ6UVffG9jycNm8GofhH44DSYRRWUF7aNgMINTVUU_xHbq-IyIGU20dQVGAXAvnLsnNU1sul9cvmBjK6pHGu5A2FQL7TvAoVAj1qPEKKOE44ascs6kDI6x_BqqQsWuOJG6CLymZUiod_LLNjFP_lKFui27Oc)/video/866/348/578843668_mp4_h264_aac_hq_2.m3u8#cell=cf3", type: "hls" },
-  { title: "Episode 8", src: "https://vod3.cf.dmcdn.net/sec2(0Gnn4R91fhVii-hdEo0F-_bx63Sc9VCNnF1wmnQES8q8ldhanzPVyqUP4OHCBocxdWeA_LLi-zQQyI1hCCVvcMeoE8KGWLkL9yH1iJIC9YRc_2izR0qjsgNkWIcYIj2JhPD0f4oLhl0wI5JyqQD4FkOIzfQwt2le_H4gIfnWEyxmxb4gH7TdNyl2tbL8vQKf)/video/476/348/578843674_mp4_h264_aac_hq_3.m3u8#cell=cf3", type: "hls" },
-  { title: "Episode 9", src: "https://vod3.cf.dmcdn.net/sec2(qRXtx0nN7UEg1k_iUTnW3VTj5Wy1QvR2rVVld9kwQalvqwNEvHCMoOe57XGQWpFxhASqHiqYXQskaxrT0s19dWp3WpR_Pc-V90fQ-Xxzdm4OzjJaFGpvJaQHMgF-jpbFvKAtBcfUhG4LY7lregv3g9V883JLxZy2dtNak4lXcH_Aa3ZCTKorjz2a5mOK2JlQ)/video/276/348/578843672_mp4_h264_aac_hq_2.m3u8#cell=cf3", type: "hls" },
-  { title: "Episode 10", src: "https://vod3.cf.dmcdn.net/sec2(2KEl8XgQLc9HbToYjh_GnUZGLxD0B-70RI_yI7-IiWajTRRuy7tjbuRTPswm7zIZRkRDOunM7p4JX-c3Ib-NzzWV8PHR6MKMj9E5sYRQwauP36tdQIzJtmTbz3B1ZGHpFfmrvpChJsV1JrqONe7ROqS1T2lupPF-UlUk_oy8qgj37ruxhhXGU_FElGHTkMvQ)/video/676/348/578843676_mp4_h264_aac_hq_2.m3u8#cell=cf3", type: "hls" },
-  { title: "Episode 11", src: "https://vod3.cf.dmcdn.net/sec2(nuVlz4NxJtGy9KGye-V0jIcqPNx4yVeuNchkpFor2VVOsfyC2eh5XTIhrVmiitXF-QYSSCdd46eA-a0TDB4AtXO3YOsmzapRnt64w1XPJGVdtSADnUghT8jJuCl8YmiM0vw7nYrLdQOEou72cAy_66B2B4n3H5MMUAcTXCDpC5MG2q3CoA-P6IKDmSO2evdp)/video/074/549/584945470_mp4_h264_aac_hq_2.m3u8#cell=cf3", type: "hls" },
-  { title: "Episode 12", src: "https://vod3.cf.dmcdn.net/sec2(_eDCrk5xZExtwIcKCKc6j5qv4Wfap3e4fX855C6bo9uREikeOR15yLh0HCxJFQzbNJ2sjR7X_4e6pnZIUYtwPpYoF5CCHKAe3vMV_GhsIJ8v2oHD3GuyuKH7plHxmquOamcmLa7iwA2ePLEAgJ4iM851DFaeiZWocKpdAWLUbhDZLbK25_VyhzNJH1hznH2x)/video/664/549/584945466_mp4_h264_aac_hq_3.m3u8#cell=cf3", type: "hls" },
-  { title: "Episode 13", src: "https://vod3.cf.dmcdn.net/sec2(e2N4FBadKROhvqfFyR-MYda3oA1ugOZ-55ozCp7ABwrbUlJQ-I7uPFPoYJCgeXjjZ0rCeYn5cJxbwdqZ3bPckvESdskbm4NjHlFyDbHKn4suT2Dqy4U_-cwESa4ru4kkRP6P4P4U1mG08J_NrXe-74ZKcFXMIkALRedAgXD7mECCk6u_g7vUWv28OKxUec0S)/video/474/549/584945474_mp4_h264_aac_hq_2.m3u8#cell=cf3", type: "hls" },
-  { title: "Episode 14", src: "https://vod3.cf.dmcdn.net/sec2(fmonuhqTb874AePk4OJExBypRjD21BHCPmTYueBRXMHjTXa5BA2tHP-rQP7-yOgJzg1V5x9PV6_KloMjEkVPfJBCYukP5dRWIIv1_iz75Ap3hMjxyXm8t_w-zYb5Ov9lVFc_pg_thBILVI4Mp7wngRipi6OPoT_xDScGSHShnRo)/video/864/549/584945468_mp4_h264_aac_2.m3u8#cell=cf3", type: "hls" },
-  { title: "Episode 15", src: "https://vod3.cf.dmcdn.net/sec2(XyGmJ25W90Ne880BME8w64tazRyosK_RPQ9ni0fw7IgqY8t4hRLQoRCnGhIiLicQPaHH6y58t_F-G_S7LKcfohQ83MiUozVWWwXWQ0SM18B82F4F9r0zc56AGV_gzu3YPavpSd9-vfDzHGbMF7dC4TqH30EulrpCrlmTkZgU-shlLMU4635pL9BZ3JBwx2MB)/video/274/549/584945472_mp4_h264_aac_hq_2.m3u8#cell=cf3", type: "hls" },
-  { title: "Episode 16", src: "https://vod3.cf.dmcdn.net/sec2(LV1g4mBX4ajtl-ytEI1a2_9dYlqurnsJaBEWmaOWSXtmxNNYgsY0Cbzcoo6zf81NfgkuUZ0vN-Jo-OoD5vJ07-ijslCxk5vDeknjful1EqGksQPY-iEOwTW-HLfmWWlBH7mEXscy8dAKB1ziFOprZ679S0ONVovIvUT6humhscXfY4kkFtGPZ0wtae2_urQV)/video/878/050/585050878_mp4_h264_aac_hq_2.m3u8#cell=cf3", type: "hls" },
-  { title: "Episode 17", src: "https://vod3.cf.dmcdn.net/sec2(QL7ZC9uyPiWP_U18FP7od-tKu7hcCiQC4DOwdgCm-vT2fMd_G_7qa3hC1m_PEue9kqTZPzd8cG4lTq7SCfq0v87wmumyHk3OzkDqqk_J9FkEfWyQTBq4PKPNCJimkppjXMQAoEjCgpjBlkpm-kHKd9sLnQs5lyVRdIrLyTsb9JXj7WlLQyw-wtSGjtrBys45)/video/678/050/585050876_mp4_h264_aac_hq_2.m3u8#cell=cf3", type: "hls" },
-  { title: "Episode 18", src: "https://vod3.cf.dmcdn.net/sec2(qdVi-JSgaF4GBhxWhYmCyL6-4EnJD39NFvbWdB8eCJYa5UQLWG-jxMc-z_Vymj3dLMVE3m1jzc8G3KjGnJYXpUKEQeY6_qH_RDnu_yAcH35rXUP3wZHIU5erWlyGwWXvWLKr_bGyQqL4gY2RDohI84iQsfx9xg11bobcpMedZuRDIb4zdPzDtCwBCX5M0QiW)/video/fmp4/585285620/h264_aac/2/init.mp4", type: "mp4" },
-  { title: "Episode 19", src: "https://vod3.cf.dmcdn.net/sec2(lOibebQziczfWvw2nl41Czs1LMF_3gNoqaCqvZh0iyFZC6IIP2TXMZR2uXqJfKgS6StUxpe_rsEeRpR1Kv4UIv9qdqcJ6En3PEcIuE-dcQok0gFgwBpugsmDesyAgaYaT9WWGTLReEStk6h7xmVSa8jffJLpJTpX9m_eeKHqMHdyfncRp33-Q5X38LA_Xpe8)/video/fmp4/585285636/h264_aac_hq/2/init.mp4", type: "mp4" },
-  { title: "Episode 20", src: "https://vod3.cf.dmcdn.net/sec2(9N8J3ZEmsF9r2k_0nXdoozXhauuCRWW1pyiAHlSWT2uMyYMZA20RHq0PKu4SFfwKIpSckr3hvJJQPM_6BFmKNcp-BYyLR_CbRpUA1Xf6LmTQdtokuy7HKM2ej1nJLrLmkeqREA-_IjOQ6MYlX-eoMTGCSCRW7ydaGEb7A6u0Nj_uykiZUmpRiqLcSQPvKrOi)/video/fmp4/585285624/h264_aac_hq/2/init.mp4", type: "mp4" },
-  { title: "Episode 21", src: "https://vod3.cf.dmcdn.net/sec2(PuUbzOroBHiI6HRca_gsoqPcIDDNfJA_H2wHGfS3XE9p6aVYcSkbqIw8sV7Y8U0fxp374iiG3Eujw718G3QJYXdpciRvh_LQVNZl4OA4fcgSgjfLotlQE4iD6Lj7Ebqtn2i_UCQisqCnIzLBcuCWUJDol9jGBniFsYvjQaG-3hH7F2jOyPNEM6GBYif5xi0I)/video/fmp4/585285622/h264_aac_hq/2/init.mp4", type: "mp4" },
-  { title: "Episode 22", src: "https://vod3.cf.dmcdn.net/sec2(zKzDccYctvb01syfq5iDFdsBjaEzr68goZvpl6d6n1kq7PL7pd3xBU8K7ybu1I__2ONIzJF9UMO-EXKQPcWwKWsUkcxCHplM2E3SdUCrFRJu8Y4ebvUv2g_RLG6CTL9Okh5h__XDjDiOuMximJCiQ4HO0kG4UGw9eqVazCobkNp5E8iYZzZR5EgqBciJPq7O)/video/fmp4/585285632/h264_aac_hq/2/init.mp4", type: "mp4" },
-  { title: "Episode 23", src: "https://vod3.cf.dmcdn.net/sec2(UIalAtSUWL2u3A-AgLZhT0sv-kFxXdaemQhJcwau-pL04jpys3XmVfKaYiJYRRDnu0_7PEb2MfxHLxbeKYpuIRkYHss90p_61rF66imtkwWYGHwE_TuVhDul-7Ta-kyiFYAvfap9QRd5Sy_Hb6X12nUtzfyWPEVbnQdUkJ79Zl5TWum-rceqjy89iiSgitH7)/video/fmp4/585285626/h264_aac_hq/2/init.mp4", type: "mp4" },
-  { title: "Episode 24", src: "https://vod3.cf.dmcdn.net/sec2(mtX6YvSs8HfgKGjMHcrM2apZBmAQkEuwCBRJWgmQhY1SOuSo_JHg8lPq4nU5fgVhZAhjv3X8e-0Oies12UMlL2qWKn4J8SagqwyZuPUcYXPDSc_g6-QHEEFTvx3xDNJ7oBsetzrskm-1Aw8Jd38HIYZklLK_0xOmWSC3KtiYsnaLKqWGFDiM6hPkF6EPHZU5)/video/fmp4/585285618/h264_aac_hq/2/init.mp4", type: "mp4" },
-  { title: "Last Episode", src: "https://vod3.cf.dmcdn.net/sec2(jBMoOkbiZyD1Vnnojbejm5rhyAsyPA1J9DgWGVXHHpKaxyDaCBYj1IQjR2rSz1t_uu4VVsl1USgUfhUaoVt0BBOARYex5QDZ7gKbPOqPgS8AhTqJ4KJVKc-51YeVfq2SbroAt_wlCIrqraj2u1v2ku-yJGKSXVuU9dTqBC8tw2z2WQ6hn6jiCszdpcLiiEuJ)/video/fmp4/585285634/h264_aac_hq/2/init.mp4", type: "mp4" }
-];
-
-/* ====== utilities ====== */
-const el = id => document.getElementById(id);
-const video = el('video');
-const spinner = el('spinner');
-const nowTitle = el('nowTitle');
-const nowDesc = el('nowDesc');
-const playPause = el('playPause');
-const muteBtn = el('muteBtn');
-const seek = el('seek');
-const currentTime = el('currentTime');
-const duration = el('duration');
-const vol = el('vol');
-const fsBtn = el('fsBtn');
-const epList = el('epList');
-const search = el('search');
-const shuffleBtn = el('shuffle');
-
-let currentIdx = -1;
-let hls = null;
-
-/* build episode list */
-function buildList(items){
-  epList.innerHTML = '';
-  items.forEach((it, idx)=>{
-    const btn = document.createElement('div');
-    btn.className = 'ep-btn';
-    btn.innerHTML = `
-      <div class="thumb-small" style="background-image:url('https://i.postimg.cc/BvgT2VzC/images-3-4.jpg')"></div>
-      <div class="ep-meta">
-        <div class="ep-title">${it.title}</div>
-        <div class="ep-sub">Click to play • ${it.type.toUpperCase()}</div>
-      </div>
-    `;
-    btn.addEventListener('click', ()=> loadEpisode(idx));
-    epList.appendChild(btn);
-  });
-}
-buildList(episodes);
-
-/* load episode into player */
-function loadEpisode(index){
-  if(index < 0 || index >= episodes.length) return;
-  const ep = episodes[index];
-  currentIdx = index;
-  nowTitle.textContent = ep.title;
-  nowDesc.textContent = `Source: ${ep.type.toUpperCase()} — ${ep.src}`;
-  showSpinner(true);
-
-  // tear down previous HLS if exists
-  if(hls){ try { hls.destroy(); } catch(e){} hls = null; }
-  video.pause();
-  video.removeAttribute('src');
-  video.load();
-  // If type is HLS (.m3u8) use hls.js when needed
-  if(ep.type === 'hls'){
-    if(Hls.isSupported()){
-      hls = new Hls({maxBufferLength:30,capLevelToPlayerSize:true});
-      hls.loadSource(ep.src);
-      hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, function() {
-        showSpinner(false);
-        video.play().catch(()=>{ /* autoplay blocked */ });
-      });
-      hls.on(Hls.Events.ERROR, function(event, data){
-        console.warn('HLS error', data);
-        // show fallback message if fatal
-        if(data && data.fatal){
-          showSpinner(false);
-          nowDesc.textContent = 'Playback error (HLS). Try opening source in new tab.';
-        }
-      });
-    } else if(video.canPlayType('application/vnd.apple.mpegurl')){
-      // native HLS (Safari, iOS)
-      video.src = ep.src;
-      video.addEventListener('loadedmetadata', ()=>{ showSpinner(false); video.play().catch(()=>{}); }, {once:true});
-    } else {
-      showSpinner(false);
-      nowDesc.textContent = 'HLS not supported in this browser.';
-    }
-  } else if(ep.type === 'mp4'){
-    video.src = ep.src;
-    video.addEventListener('loadedmetadata', ()=>{ showSpinner(false); video.play().catch(()=>{}); }, {once:true});
-  } else if(ep.type === 'iframe'){
-    // (not used in default template)
-    el('ytFrame').style.display = 'block';
-    el('ytFrame').src = ep.src;
-    showSpinner(false);
-  }
-}
-
-/* spinner helper */
-function showSpinner(on){
-  spinner.style.display = on ? 'block' : 'none';
-}
-
-/* controls wiring */
-playPause.addEventListener('click', ()=>{
-  if(video.paused){
-    video.play(); playPause.textContent = 'Pause ❚❚';
-  } else { video.pause(); playPause.textContent = 'Play ▶'; }
-});
-muteBtn.addEventListener('click', ()=>{
-  video.muted = !video.muted;
-  muteBtn.textContent = video.muted ? '🔈' : '🔊';
-});
-vol.addEventListener('input', ()=>{ video.volume = parseFloat(vol.value); video.muted = video.volume===0; });
-fsBtn.addEventListener('click', ()=>{
-  if(document.fullscreenElement) document.exitFullscreen();
-  else el('playerWrap').requestFullscreen().catch(()=>{});
-});
-
-/* time / seek updates */
-video.addEventListener('timeupdate', ()=>{
-  const c = video.currentTime || 0;
-  const d = video.duration || 0;
-  currentTime.textContent = formatTime(c);
-  duration.textContent = formatTime(d);
-  if(!isNaN(d) && d>0){
-    seek.value = (c/d)*100;
-  } else seek.value = 0;
-});
-seek.addEventListener('input', ()=>{
-  const d = video.duration || 0;
-  if(d>0) video.currentTime = (parseFloat(seek.value)/100)*d;
-});
-video.addEventListener('waiting', ()=> showSpinner(true));
-video.addEventListener('playing', ()=> showSpinner(false));
-video.addEventListener('ended', ()=> playPause.textContent = 'Play ▶');
-
-/* format time */
-function formatTime(s){
-  if(!s || isNaN(s)) return '00:00';
-  s = Math.floor(s);
-  const m = Math.floor(s/60), sec = s%60;
-  return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
-}
-
-/* search */
-search.addEventListener('input', ()=>{
-  const q = search.value.trim().toLowerCase();
-  const filtered = episodes.filter(e => e.title.toLowerCase().includes(q));
-  buildList(filtered);
-});
-
-/* shuffle */
-/* shuffle */
-const videoButtons = document.querySelectorAll(".episode-btn");
-const videoPlayer = document.getElementById("videoPlayer");
-const videoSource = document.getElementById("videoSource");
-
-// Jab koi episode button click ho
-videoButtons.forEach((btn) => {
-  btn.addEventListener("click", function () {
-    const link = this.getAttribute("data-src");
-    videoSource.src = link;
-    videoPlayer.load();
-    videoPlayer.play();
-  });
-});
-
-// Optional: Random background color shuffle
-function shuffleColors() {
-  const colors = ["#1e293b", "#0f172a", "#334155", "#475569", "#1e40af"];
-  document.body.style.backgroundColor =
-    colors[Math.floor(Math.random() * colors.length)];
-}
-
-// Page load hone par random background
-shuffleColors();
-
-</script>
+    // Volume Control
+    volumeControl.addEventListener("input", () => {
+      video.volume = volumeControl.value;
+    });
+  </script>
 </body>
 </html>
