@@ -122,27 +122,27 @@ footer {
 
 <footer>© 2025 Sinf-e-Aahan | Powered by Basit Awan</footer>
 
-<!-- Load YouTube IFrame API -->
+<!-- Load YouTube API FIRST -->
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
 let player;
 
+// this function must be GLOBAL (not inside any other)
 function onYouTubeIframeAPIReady() {
   player = new YT.Player("player", {
-    videoId: "RCtj3XNA4FY",
-    playerVars: { rel: 0, showinfo: 0 },
+    videoId: "RCtj3XNA4FY", // default
+    playerVars: { rel: 0, modestbranding: 1 },
   });
 }
 
-// Buttons
-document.getElementById("playBtn").addEventListener("click", () => {
-  if (player) player.playVideo();
-});
+// ensure buttons only work when player ready
+function safeAction(action) {
+  if (player && player[action]) player[action]();
+}
 
-document.getElementById("pauseBtn").addEventListener("click", () => {
-  if (player) player.pauseVideo();
-});
+document.getElementById("playBtn").addEventListener("click", () => safeAction("playVideo"));
+document.getElementById("pauseBtn").addEventListener("click", () => safeAction("pauseVideo"));
 
 document.getElementById("muteBtn").addEventListener("click", (e) => {
   if (!player) return;
@@ -159,11 +159,10 @@ document.getElementById("volumeControl").addEventListener("input", (e) => {
   if (player) player.setVolume(e.target.value);
 });
 
-// Episode click
 document.getElementById("episodeList").addEventListener("click", (e) => {
   if (e.target.classList.contains("episode-item")) {
     const videoId = e.target.getAttribute("data-id");
-    player.loadVideoById(videoId);
+    if (player && player.loadVideoById) player.loadVideoById(videoId);
   }
 });
 </script>
