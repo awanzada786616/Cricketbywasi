@@ -4,154 +4,129 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ehd-e-Wafa Episode 1</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
   <style>
     body {
-      font-family: "Poppins", sans-serif;
-      background: linear-gradient(135deg, #0f172a, #1e3a8a);
-      color: #fff;
-      margin: 0;
-      padding: 0;
+      background: #0f0f0f;
+      font-family: 'Poppins', sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
+      height: 100vh;
+      margin: 0;
+      color: #fff;
     }
 
-    .player-container {
-      width: 90%;
-      max-width: 850px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
-      box-shadow: 0 0 40px rgba(0, 0, 0, 0.4);
-      overflow: hidden;
-      backdrop-filter: blur(10px);
-    }
-
-    h1 {
-      text-align: center;
-      color: #60a5fa;
-      font-size: 2rem;
-      margin: 20px 0;
-    }
-
-    .video-wrapper {
+    .video-container {
       position: relative;
+      width: 90%;
+      max-width: 720px;
+      background: #1a1a1a;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
     }
 
-    video {
+    iframe {
       width: 100%;
-      border-radius: 12px;
-      display: block;
+      height: 400px;
+      border: none;
+      display: none; /* hide until loaded */
+      border-radius: 16px;
     }
 
-    /* Loading Spinner */
     .spinner {
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%);
       width: 60px;
       height: 60px;
-      border: 6px solid rgba(255, 255, 255, 0.2);
-      border-top-color: #60a5fa;
+      border: 6px solid #ccc;
+      border-top-color: #00bcd4;
       border-radius: 50%;
       animation: spin 1s linear infinite;
-      display: none;
+      transform: translate(-50%, -50%);
     }
 
     @keyframes spin {
-      to { transform: translate(-50%, -50%) rotate(360deg); }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
     }
 
-    /* Controls */
     .controls {
       display: flex;
-      justify-content: space-between;
+      justify-content: space-around;
       align-items: center;
-      background: rgba(0, 0, 0, 0.4);
-      padding: 10px 15px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 10px;
     }
 
-    .btn {
-      color: #fff;
-      font-size: 1.5rem;
+    button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 18px;
       cursor: pointer;
-      transition: color 0.3s ease;
     }
 
-    .btn:hover {
-      color: #60a5fa;
-    }
-
-    input[type="range"] {
-      width: 100px;
-      cursor: pointer;
-      accent-color: #60a5fa;
-    }
-
-    footer {
-      text-align: center;
-      padding: 15px;
-      color: #a5b4fc;
-      font-size: 0.9rem;
+    button:hover {
+      color: #00bcd4;
     }
   </style>
 </head>
 <body>
-  <div class="player-container">
-    <h1>🎬 Ehd-e-Wafa – Episode 1</h1>
-
-    <div class="video-wrapper">
-      <div class="spinner" id="spinner"></div>
-      <video id="videoPlayer" poster="https://i.postimg.cc/BvgT2VzC/images-3-4.jpg" preload="none">
-        <source src="https://www.youtube-nocookie.com/embed/LnWKxREc8hs" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-    </div>
+  <div class="video-container">
+    <div class="spinner" id="spinner"></div>
+    <iframe
+      id="ytplayer"
+      src="https://www.youtube-nocookie.com/embed/LnWKxREc8hs?enablejsapi=1&rel=0&modestbranding=1"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen
+    ></iframe>
 
     <div class="controls">
-      <i class="fa-solid fa-play btn" id="playPause"></i>
-      <i class="fa-solid fa-volume-high btn" id="muteBtn"></i>
-      <input type="range" id="volumeControl" min="0" max="1" step="0.05" value="1" />
+      <button id="playPause">▶️ / ⏸️</button>
+      <button id="muteUnmute">🔇 / 🔊</button>
+      <button id="fullscreen">⛶</button>
     </div>
-
-    <footer>© 2025 DramaStream | Ehd-e-Wafa Episode 1</footer>
   </div>
 
   <script>
-    const video = document.getElementById("videoPlayer");
-    const playPause = document.getElementById("playPause");
-    const muteBtn = document.getElementById("muteBtn");
-    const volumeControl = document.getElementById("volumeControl");
-    const spinner = document.getElementById("spinner");
+    let player;
 
-    // Loading spinner
-    video.addEventListener("waiting", () => spinner.style.display = "block");
-    video.addEventListener("playing", () => spinner.style.display = "none");
+    // Load YouTube Iframe API
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.body.appendChild(tag);
 
-    // Play / Pause toggle
-    playPause.addEventListener("click", () => {
-      if (video.paused) {
-        video.play();
-        playPause.classList.replace("fa-play", "fa-pause");
-      } else {
-        video.pause();
-        playPause.classList.replace("fa-pause", "fa-play");
-      }
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('ytplayer', {
+        events: {
+          'onReady': onPlayerReady
+        }
+      });
+    }
+
+    function onPlayerReady() {
+      document.getElementById('spinner').style.display = 'none';
+      document.getElementById('ytplayer').style.display = 'block';
+    }
+
+    document.getElementById('playPause').addEventListener('click', () => {
+      const state = player.getPlayerState();
+      if (state === YT.PlayerState.PLAYING) player.pauseVideo();
+      else player.playVideo();
     });
 
-    // Mute / Unmute
-    muteBtn.addEventListener("click", () => {
-      video.muted = !video.muted;
-      muteBtn.classList.toggle("fa-volume-xmark", video.muted);
-      muteBtn.classList.toggle("fa-volume-high", !video.muted);
+    document.getElementById('muteUnmute').addEventListener('click', () => {
+      if (player.isMuted()) player.unMute();
+      else player.mute();
     });
 
-    // Volume Control
-    volumeControl.addEventListener("input", () => {
-      video.volume = volumeControl.value;
+    document.getElementById('fullscreen').addEventListener('click', () => {
+      const iframe = document.getElementById('ytplayer');
+      if (iframe.requestFullscreen) iframe.requestFullscreen();
     });
   </script>
 </body>
