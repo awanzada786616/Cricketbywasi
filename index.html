@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ehd-e-Wafa - All Episodes</title>
+<title>Raqs-e-Bismil - All Episodes</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
 <style>
   body {
-    background: radial-gradient(circle at top, #0d0d0d, #1b1b1b);
-    color: white;
+    background: radial-gradient(circle at top, #1a0025, #0a0012);
+    color: #f0e6ff;
     font-family: 'Poppins', sans-serif;
     display: flex;
     flex-direction: column;
@@ -19,8 +19,9 @@
   }
 
   h1 {
-    color: #00bcd4;
+    color: #d4a5ff;
     margin: 25px 0;
+    text-shadow: 0 0 10px #b56cff;
     letter-spacing: 1px;
     text-align: center;
   }
@@ -30,7 +31,7 @@
     max-width: 900px;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 20px;
-    box-shadow: 0 0 20px rgba(0, 188, 212, 0.25);
+    box-shadow: 0 0 20px rgba(212, 165, 255, 0.25);
     padding: 20px;
     backdrop-filter: blur(10px);
   }
@@ -55,8 +56,8 @@
     left: 50%;
     width: 70px;
     height: 70px;
-    border: 6px solid #333;
-    border-top-color: #00bcd4;
+    border: 6px solid #2e0249;
+    border-top-color: #d4a5ff;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     transform: translate(-50%, -50%);
@@ -75,7 +76,7 @@
   .control-btn {
     background: rgba(255,255,255,0.1);
     border: none;
-    color: #00bcd4;
+    color: #d4a5ff;
     font-size: 22px;
     padding: 10px 14px;
     border-radius: 50%;
@@ -84,14 +85,14 @@
   }
 
   .control-btn:hover {
-    background: #00bcd4;
-    color: black;
-    box-shadow: 0 0 15px #00bcd4;
+    background: #d4a5ff;
+    color: #1a0025;
+    box-shadow: 0 0 15px #d4a5ff;
     transform: scale(1.1);
   }
 
   .next-btn {
-    background: linear-gradient(90deg, #00bcd4, #009688);
+    background: linear-gradient(90deg, #d4a5ff, #a24cff);
     border: none;
     color: white;
     padding: 10px 20px;
@@ -103,7 +104,7 @@
     transition: 0.3s;
   }
 
-  .next-btn:hover { transform: scale(1.05); box-shadow: 0 0 15px #00bcd4; }
+  .next-btn:hover { transform: scale(1.05); box-shadow: 0 0 15px #d4a5ff; }
 
   .episode-list {
     display: grid;
@@ -127,19 +128,19 @@
   }
 
   .episode-btn:hover, .episode-btn.active {
-    background: #00bcd4;
-    color: black;
+    background: #d4a5ff;
+    color: #1a0025;
     transform: scale(1.05);
   }
 </style>
 </head>
 <body>
 
-<h1>Ehd-e-Wafa - All Episodes</h1>
+<h1>Raqs-e-Bismil — All Episodes</h1>
 <div class="container">
   <div class="video-box">
     <div class="spinner" id="spinner"></div>
-    <iframe id="ytplayer" src="https://www.youtube.com/embed/LnWKxREc8hs?enablejsapi=1&rel=0&modestbranding=1" allowfullscreen></iframe>
+    <iframe id="ytplayer" src="https://www.youtube.com/embed/G2fqX628w-E?enablejsapi=1&rel=0&modestbranding=1" allowfullscreen></iframe>
   </div>
 
   <div class="controls">
@@ -153,15 +154,11 @@
   <div class="episode-list" id="episodeList"></div>
 </div>
 
-<!-- Load YouTube API -->
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
 const episodes = [
-  "LnWKxREc8hs", "0jYlVih0dvA", "MpVrqhIJnmg", "w30TBwftcck", "6WiCRzT59zQ", "V9Lx3-28BMI",
-  "Tf_lZR-mgEw", "ZqfaUdOqR_I", "Pfq9eYyAGN0", "6mF16IYang4", "A8yvDOqaXvE", "j12z2ZPMLPA",
-  "7UOoFVLSxaY", "Bu412i99H9A", "2XdbfKG68X4", "DyG4ioCN9QU", "gHWPcXDBYvY", "YLhJZ_ce98s",
-  "UK79eaZr1eM", "r19Jwsgy6Hg", "nww2eVdxzcA", "r4Jk2rMGXZA", "ev3cDksfeZM", "_EkZyhk07BQ", "7wYnw3yUI3k"
+  "G2fqX628w-E" // First episode (you can add more IDs here later)
 ];
 
 let currentIndex = 0;
@@ -197,13 +194,12 @@ function playNextEpisode() {
     currentIndex++;
     loadEpisode();
   } else {
-    alert("🎉 You have finished the last episode!");
+    alert("✨ You have reached the last episode!");
   }
 }
 
 document.getElementById('nextEpisode').addEventListener('click', playNextEpisode);
 
-// build episode buttons
 const list = document.getElementById('episodeList');
 episodes.forEach((id, i) => {
   const btn = document.createElement('div');
