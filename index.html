@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Sinf-e-Aahan – Watch All Episodes</title>
+<title>Sinf-e-Aahan – All Episodes</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
 <style>
 body {
@@ -16,21 +16,20 @@ body {
 }
 header {
   padding: 20px 10px;
-  font-size: 2.2em;
+  font-size: 2em;
   color: #8fd3ff;
-  text-shadow: 0 0 15px #008cff;
+  text-shadow: 0 0 15px #00bfff;
 }
 .player-container {
   max-width: 900px;
   margin: 0 auto;
   border-radius: 15px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 20px rgba(0, 140, 255, 0.3);
-  backdrop-filter: blur(10px);
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 0 20px rgba(0,140,255,0.3);
   padding-bottom: 10px;
 }
-#mainPlayer {
+#player {
   width: 100%;
   height: 480px;
   border: none;
@@ -39,12 +38,12 @@ header {
 .controls {
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 25px;
   align-items: center;
   padding: 10px 0;
 }
 .controls i {
-  font-size: 24px;
+  font-size: 26px;
   color: #8fd3ff;
   cursor: pointer;
   transition: transform 0.2s, color 0.2s;
@@ -54,7 +53,7 @@ header {
   color: #00b7ff;
 }
 .volume-slider {
-  width: 100px;
+  width: 120px;
   accent-color: #00b7ff;
 }
 .episode-list {
@@ -63,7 +62,7 @@ header {
   text-align: left;
 }
 .episode-item {
-  background: rgba(255, 255, 255, 0.07);
+  background: rgba(255,255,255,0.07);
   margin: 8px 0;
   padding: 12px 15px;
   border-radius: 10px;
@@ -71,7 +70,7 @@ header {
   transition: all 0.3s;
 }
 .episode-item:hover {
-  background: rgba(0, 150, 255, 0.3);
+  background: rgba(0,150,255,0.3);
   transform: translateX(5px);
 }
 footer {
@@ -86,7 +85,7 @@ footer {
 <header><i class="fa-solid fa-star"></i> Sinf-e-Aahan <i class="fa-solid fa-star"></i></header>
 
 <div class="player-container">
-  <iframe id="mainPlayer" src="https://www.youtube.com/embed/RCtj3XNA4FY" allowfullscreen></iframe>
+  <div id="player"></div>
   <div class="controls">
     <i id="playBtn" class="fa-solid fa-play"></i>
     <i id="pauseBtn" class="fa-solid fa-pause"></i>
@@ -123,47 +122,48 @@ footer {
 
 <footer>© 2025 Sinf-e-Aahan | Powered by Basit Awan</footer>
 
+<!-- Load YouTube IFrame API -->
+<script src="https://www.youtube.com/iframe_api"></script>
+
 <script>
-const player = document.getElementById("mainPlayer");
-const playBtn = document.getElementById("playBtn");
-const pauseBtn = document.getElementById("pauseBtn");
-const muteBtn = document.getElementById("muteBtn");
-const volumeControl = document.getElementById("volumeControl");
-
-const tag = document.createElement('script');
-tag.src = "https://www.youtube.com/iframe_api";
-document.body.appendChild(tag);
-
-let ytPlayer;
+let player;
 
 function onYouTubeIframeAPIReady() {
-  ytPlayer = new YT.Player("mainPlayer", {
-    events: {
-      onReady: () => console.log("Player Ready")
-    }
+  player = new YT.Player("player", {
+    videoId: "RCtj3XNA4FY",
+    playerVars: { rel: 0, showinfo: 0 },
   });
 }
 
-playBtn.addEventListener("click", () => ytPlayer.playVideo());
-pauseBtn.addEventListener("click", () => ytPlayer.pauseVideo());
-muteBtn.addEventListener("click", () => {
-  if (ytPlayer.isMuted()) {
-    ytPlayer.unMute();
-    muteBtn.className = "fa-solid fa-volume-high";
-  } else {
-    ytPlayer.mute();
-    muteBtn.className = "fa-solid fa-volume-xmark";
-  }
-});
-volumeControl.addEventListener("input", (e) => {
-  const volume = e.target.value;
-  ytPlayer.setVolume(volume);
+// Buttons
+document.getElementById("playBtn").addEventListener("click", () => {
+  if (player) player.playVideo();
 });
 
+document.getElementById("pauseBtn").addEventListener("click", () => {
+  if (player) player.pauseVideo();
+});
+
+document.getElementById("muteBtn").addEventListener("click", (e) => {
+  if (!player) return;
+  if (player.isMuted()) {
+    player.unMute();
+    e.target.className = "fa-solid fa-volume-high";
+  } else {
+    player.mute();
+    e.target.className = "fa-solid fa-volume-xmark";
+  }
+});
+
+document.getElementById("volumeControl").addEventListener("input", (e) => {
+  if (player) player.setVolume(e.target.value);
+});
+
+// Episode click
 document.getElementById("episodeList").addEventListener("click", (e) => {
   if (e.target.classList.contains("episode-item")) {
     const videoId = e.target.getAttribute("data-id");
-    ytPlayer.loadVideoById(videoId);
+    player.loadVideoById(videoId);
   }
 });
 </script>
