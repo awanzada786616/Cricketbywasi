@@ -1,106 +1,102 @@
-‎<!DOCTYPE html>
-‎<html lang="en">
-‎<head>
-‎<meta charset="UTF-8" />
-‎<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-‎<title>Sanwal Yaar Piya – Episodes</title>
-‎<style>
-‎  body {
-‎    margin: 0;
-‎    padding: 0;
-‎    font-family: "Poppins", sans-serif;
-‎    background: linear-gradient(to right, #1a2a6c, #b21f1f, #fdbb2d);
-‎    color: #fff;
-‎  }
-‎  header {
-‎    text-align: center;
-‎    padding: 20px;
-‎    font-size: 2rem;
-‎    font-weight: 700;
-‎    background: rgba(0,0,0,0.3);
-‎  }
-‎  #loader {
-‎    text-align: center;
-‎    padding: 20px;
-‎    display: none;
-‎    font-size: 1.2rem;
-‎  }
-‎  .grid {
-‎    display: grid;
-‎    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-‎    gap: 20px;
-‎    padding: 20px;
-‎  }
-‎  .card {
-‎    background: rgba(255,255,255,0.1);
-‎    border-radius: 12px;
-‎    overflow: hidden;
-‎    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-‎    transition: transform 0.3s;
-‎  }
-‎  .card:hover {
-‎    transform: scale(1.03);
-‎  }
-‎  iframe {
-‎    width: 100%;
-‎    height: 180px;
-‎    border: none;
-‎  }
-‎  h3 {
-‎    padding: 10px;
-‎    margin: 0;
-‎    font-size: 1rem;
-‎    color: #ffeb3b;
-‎  }
-‎</style>
-‎</head>
-‎<body>
-‎<header>📺 Sanwal Yaar Piya – All Episodes</header>
-‎<div id="loader">⏳ Loading episodes…</div>
-‎<div id="videoGrid" class="grid"></div>
-‎
-‎<script>
-‎const apiKey = "AIzaSyDabc123XYZ";  // ← apni API key yahan lagao
-‎const channelId = "UCWkzX-4MRAx0EJzvW07nH2g"; // Har Pal Geo Official Channel ID
-‎
-‎async function loadEpisodes() {
-‎  const loader = document.getElementById("loader");
-‎  const grid = document.getElementById("videoGrid");
-‎  loader.style.display = "block";
-‎  grid.innerHTML = "";
-‎
-‎  try {
-‎    const response = await fetch(
-‎      `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&q=Sanwal%20Yaar%20Piya&type=video&maxResults=25&order=date&key=${apiKey}`
-‎    );
-‎    const data = await response.json();
-‎    loader.style.display = "none";
-‎
-‎    if (!data.items || data.items.length === 0) {
-‎      grid.innerHTML = "<p style='text-align:center'>No episodes found.</p>";
-‎      return;
-‎    }
-‎
-‎    data.items.forEach(item => {
-‎      const vid = item.id.videoId;
-‎      const title = item.snippet.title;
-‎      const card = document.createElement("div");
-‎      card.className = "card";
-‎      card.innerHTML = `
-‎        <iframe src="https://www.youtube.com/embed/${vid}" allowfullscreen></iframe>
-‎        <h3>${title}</h3>
-‎      `;
-‎      grid.appendChild(card);
-‎    });
-‎  } catch (err) {
-‎    loader.style.display = "none";
-‎    grid.innerHTML = "<p style='text-align:center;color:red;'>Error loading videos. Check API key.</p>";
-‎    console.error(err);
-‎  }
-‎}
-‎
-‎window.onload = loadEpisodes;
-‎</script>
-‎</body>
-‎</html>
-‎
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sinf-e-Aahan – Full Episodes</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+body {
+  background: radial-gradient(circle at top, #001f3f, #000);
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 2.5em;
+  color: #8fd3ff;
+  text-shadow: 0 0 15px #008cff;
+  margin-bottom: 10px;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  margin-top: 30px;
+}
+
+.card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  padding: 15px;
+  box-shadow: 0 0 20px rgba(0, 140, 255, 0.4);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 25px rgba(0, 140, 255, 0.8);
+}
+
+iframe {
+  width: 100%;
+  height: 200px;
+  border-radius: 15px;
+}
+
+.episode-title {
+  margin-top: 10px;
+  font-size: 1.1em;
+  color: #aee4ff;
+}
+
+footer {
+  margin-top: 30px;
+  font-size: 0.9em;
+  color: #bbb;
+}
+</style>
+</head>
+<body>
+
+<h1><i class="fa-solid fa-star"></i> Sinf-e-Aahan Episodes <i class="fa-solid fa-star"></i></h1>
+
+<div class="container">
+
+<div class="card"><iframe src="https://www.youtube.com/embed/RCtj3XNA4FY" allowfullscreen></iframe><div class="episode-title">Episode 1</div></div>
+<div class="card"><iframe src="https://www.youtube.com/embed/TGoUz8cAJmU" allowfullscreen></iframe><div class="episode-title">Episode 2</div></div>
+<div class="card"><iframe src="https://www.youtube.com/embed/j2oAXnsvinc" allowfullscreen></iframe><div class="episode-title">Episode 3</div></div>
+<div class="card"><iframe src="https://www.youtube.com/embed/aqltmanE9uQ" allowfullscreen></iframe><div class="episode-title">Episode 4</div></div>
+<div class="card"><iframe src="https://www.youtube.com/embed/K01ou-0gXyM" allowfullscreen></iframe><div class="episode-title">Episode 5</div></div>
+<div class="card"><iframe src="https://www.youtube.com/embed/DbwSyuqGvGk" allowfullscreen></iframe><div class="episode-title">Episode 6</div></div>
+<div class="card"><iframe src="https://www.youtube.com/embed/1YnJRgbKBzo" allowfullscreen></iframe><div class="episode-title">Episode 7</div></div>
+<div class="card"><iframe src="https://www.youtube.com/embed/IgSKPc4JT_g" allowfullscreen></iframe><div class="episode-title">Episode 8</div></div>
+<div class="card"><iframe src="https://www.youtube.com/embed/KCzGFmTCVQA" allowfullscreen></iframe><div class="episode-title">Episode 9</div></div>
+<div class="card"><iframe src="https://www.youtube.com/embed/wDtG2YIJqJU" allowfullscreen></iframe><div class="episode-title">Episode 10</div></div>
+<div class="card"><iframe src="https://www.youtube.com/embed/C_S5ompj1Hk" allowfullscreen></iframe><div class="episode-title">Episode 12</div></div>
+<div class="card"><iframe src="https://www.youtube.com/embed/m-f0TnCfqtM" allowfullscreen></iframe><div class="episode-title">Episode 13</div></div>
+<div class="card"><iframe src="https://www.youtube.com/embed/WPpP9dfD7aw" allowfullscreen></iframe><div class="episode-title">Episode 14</div></div>
+<div class="card"><iframe src="https://www.youtube.com/embed/2eoJnSIrlE8" allowfullscreen></iframe><div class="episode-title">Episode 15</div></div>
+<div class="card"><iframe src="https://www.youtube.com/embed/xBRwy2HRY8o" allowfullscreen></iframe><div class="episode-title">Episode 16</div></div>
+<div class="card"><iframe src="https://www.youtube.com/embed/aeNhf9AWK34" allowfullscreen></iframe><div class="episode-title">Episode 17</div></div>
+<div class="card"><iframe src="https://www.youtube.com/embed/jTrk0un1Oqw" allowfullscreen></iframe><div class="episode-title">Episode 18</div></div>
+<div class="card"><iframe src="https://www.youtube.com/embed/5Fl0aty-BG8" allowfullscreen></iframe><div class="episode-title">Episode 19</div></div>
+<div class="card"><iframe src="https://www.youtube.com/embed/XHoR8N0yEiY" allowfullscreen></iframe><div class="episode-title">Episode 20</div></div>
+<div class="card"><iframe src="https://www.youtube.com/embed/bS81qjKQ4eE" allowfullscreen></iframe><div class="episode-title">Episode 21</div></div>
+<div class="card"><iframe src="https://www.youtube.com/embed/xkAawwVrQUQ" allowfullscreen></iframe><div class="episode-title">Episode 22</div></div>
+<div class="card"><iframe src="https://www.youtube.com/embed/oC5mQKttv7A" allowfullscreen></iframe><div class="episode-title">Episode 23</div></div>
+<div class="card"><iframe src="https://www.youtube.com/embed/3frfl267sos" allowfullscreen></iframe><div class="episode-title">Episode 24</div></div>
+
+</div>
+
+<footer>© 2025 Sinf-e-Aahan | Powered by Basit Awan</footer>
+
+</body>
+</html>
