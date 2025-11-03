@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YouTube Clone - Wasi Tube</title>
+  <title>Wasi Tube - Auto Search</title>
 
-  <!-- Font Awesome -->
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
@@ -159,7 +158,8 @@
   <header>🎬 Wasi Tube</header>
 
   <div class="search-bar">
-    <input id="query" placeholder="Search any video..." onkeydown="if(event.key==='Enter') searchVideos()" />
+    <input id="query" placeholder="Search any video..." value="Latest Pakistani Dramas"
+      onkeydown="if(event.key==='Enter') searchVideos()" />
     <button onclick="searchVideos()">Search</button>
   </div>
 
@@ -189,7 +189,6 @@
     let player, currentVideoId = "HOUXO4yI7po";
     let isMuted = false;
 
-    // YouTube API Ready
     function onYouTubeIframeAPIReady() {
       player = new YT.Player("mainPlayer", {
         videoId: currentVideoId,
@@ -197,7 +196,6 @@
       });
     }
 
-    // Search Function
     async function searchVideos() {
       const query = document.getElementById("query").value.trim();
       if (!query) return alert("Please enter a search keyword");
@@ -238,14 +236,12 @@
       }
     }
 
-    // Load Selected Video
     function loadVideo(videoId) {
       currentVideoId = videoId;
       player.loadVideoById(videoId);
       document.getElementById("playPause").className = "fa-solid fa-pause";
     }
 
-    // Play/Pause
     document.getElementById("playPause").addEventListener("click", () => {
       if (!player) return;
       const state = player.getPlayerState();
@@ -258,7 +254,6 @@
       }
     });
 
-    // Mute/Unmute
     document.getElementById("mute").addEventListener("click", () => {
       if (!player) return;
       if (isMuted) {
@@ -271,7 +266,6 @@
       isMuted = !isMuted;
     });
 
-    // Fullscreen
     document.getElementById("fullscreen").addEventListener("click", () => {
       const iframe = document.getElementById("mainPlayer");
       if (iframe.requestFullscreen) iframe.requestFullscreen();
@@ -279,8 +273,7 @@
       else if (iframe.msRequestFullscreen) iframe.msRequestFullscreen();
     });
 
-    // Default search
-    window.onload = () => searchVideos("Pakistani Songs");
+    window.onload = () => searchVideos("Latest Pakistani Dramas");
   </script>
 </body>
 </html>
