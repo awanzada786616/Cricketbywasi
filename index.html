@@ -3,63 +3,49 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tamasha Live TV</title>
+<title>Tamasha Live TV Fullscreen</title>
 <style>
-    /* Body & overall layout */
-    body, html {
+    /* Full-screen reset */
+    html, body {
         margin: 0;
         padding: 0;
         height: 100%;
-        background: linear-gradient(135deg, #1e1e2f, #0f0f1a);
+        width: 100%;
+        overflow: hidden;
+        background: linear-gradient(135deg, #0f0f1a, #1e1e2f);
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: #fff;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
     }
 
     /* Header */
     header {
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
         padding: 15px 0;
         text-align: center;
-        background: #0b0b1a;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-        font-size: 24px;
+        background: rgba(11, 11, 26, 0.85);
+        color: #ffcc00;
+        font-size: 28px;
         font-weight: bold;
         letter-spacing: 1px;
-        color: #ffcc00;
+        z-index: 1000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.7);
     }
 
-    /* Iframe container */
+    /* Iframe full-screen */
     .iframe-container {
-        position: relative;
-        width: 90%;
-        max-width: 1200px;
-        padding-top: 56.25%; /* 16:9 Aspect Ratio */
-        margin: 20px 0;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.7);
-        border-radius: 12px;
-        overflow: hidden;
-    }
-
-    .iframe-container iframe {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        border: none;
     }
 
-    /* Footer */
-    footer {
+    .iframe-container iframe {
         width: 100%;
-        text-align: center;
-        padding: 10px 0;
-        background: #0b0b1a;
-        color: #aaa;
-        font-size: 14px;
+        height: 100%;
+        border: none;
     }
 
     /* Loading spinner */
@@ -68,18 +54,31 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        border: 6px solid rgba(255,255,255,0.2);
-        border-top: 6px solid #ffcc00;
+        border: 8px solid rgba(255,255,255,0.2);
+        border-top: 8px solid #ffcc00;
         border-radius: 50%;
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
         animation: spin 1s linear infinite;
-        z-index: 10;
+        z-index: 1001;
     }
 
     @keyframes spin {
         0% { transform: translate(-50%, -50%) rotate(0deg); }
         100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    /* Footer */
+    footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+        padding: 10px 0;
+        background: rgba(11,11,26,0.8);
+        color: #ccc;
+        font-size: 14px;
+        z-index: 1000;
     }
 </style>
 </head>
