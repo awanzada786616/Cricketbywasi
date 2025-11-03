@@ -1,66 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Wasi Song Tube</title>
-  <style>
-    body {
-      margin:0; font-family:Arial, sans-serif;
-      background:#0f0f0f; color:#fff;
-    }
-    header {
-      text-align:center; padding:15px;
-      font-size:1.8rem; font-weight:bold;
-      background:linear-gradient(to right,#ff512f,#dd2476);
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    }
-    .topbar {
-      display:flex; justify-content:center; gap:10px; padding:10px; flex-wrap:wrap;
-    }
-    input {
-      padding:10px; width:60%; max-width:400px;
-      border:none; border-radius:8px; font-size:1rem;
-    }
-    button {
-      padding:10px 16px; border:none; border-radius:8px;
-      background:#ff512f; color:#fff; cursor:pointer;
-    }
-    .player {
-      position:sticky; top:0; z-index:5;
-      background:#000; display:flex; flex-direction:column;
-      align-items:center; justify-content:center;
-    }
-    .player iframe {
-      width:100%; max-width:800px; height:45vw; max-height:450px; border:none;
-    }
-    .controls {
-      display:flex; justify-content:center; gap:20px; padding:10px;
-    }
-    .controls button {
-      background:none; border:none; color:#ff512f;
-      font-size:1.5rem; cursor:pointer;
-    }
-    .cards {
-      display:flex; flex-wrap:wrap; justify-content:center;
-      gap:20px; padding:20px;
-    }
-    .card {
-      width:320px; background:#1c1c1c;
-      border-radius:10px; overflow:hidden;
-      box-shadow:0 4px 10px rgba(0,0,0,0.4);
-      transition:transform 0.2s;
-    }
-    .card:hover {transform:scale(1.05);}
-    .card img {width:100%; height:180px; object-fit:cover;}
-    .card h4 {padding:10px; font-size:0.95rem; margin:0;}
-    footer {
-      text-align:center; padding:20px; font-size:0.9rem; color:#ccc;
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Wasi Song Tube</title>
+<style>
+  body {
+    margin:0; font-family:Arial,sans-serif;
+    background:#0f0f0f; color:#fff;
+  }
+  header {
+    text-align:center; padding:15px;
+    font-size:1.8rem; font-weight:bold;
+    background:linear-gradient(to right,#ff512f,#dd2476);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .topbar {
+    display:flex; justify-content:center; gap:10px; padding:10px; flex-wrap:wrap;
+  }
+  input {
+    padding:10px; width:60%; max-width:400px;
+    border:none; border-radius:8px; font-size:1rem;
+  }
+  button {
+    padding:10px 16px; border:none; border-radius:8px;
+    background:#ff512f; color:#fff; cursor:pointer;
+  }
+  .player {
+    position:sticky; top:0; z-index:5;
+    background:#000; display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+  }
+  #player {
+    width:100%; max-width:800px; height:45vw; max-height:450px;
+  }
+  .controls {
+    display:flex; justify-content:center; gap:25px; padding:10px;
+  }
+  .controls button {
+    background:none; border:none; color:#ff512f;
+    font-size:1.8rem; cursor:pointer; transition:transform .2s;
+  }
+  .controls button:hover { transform:scale(1.2); color:#ff7b42; }
+  .cards {
+    display:flex; flex-wrap:wrap; justify-content:center;
+    gap:20px; padding:20px;
+  }
+  .card {
+    width:320px; background:#1c1c1c;
+    border-radius:10px; overflow:hidden;
+    box-shadow:0 4px 10px rgba(0,0,0,0.4);
+    transition:transform 0.2s;
+  }
+  .card:hover {transform:scale(1.05);}
+  .card img {width:100%; height:180px; object-fit:cover;}
+  .card h4 {padding:10px; font-size:0.95rem; margin:0;}
+  footer {
+    text-align:center; padding:20px; font-size:0.9rem; color:#ccc;
+  }
+</style>
 </head>
 <body>
-
   <header>🎵 Wasi Song Tube</header>
 
   <div class="topbar">
@@ -69,11 +69,14 @@
     <button onclick="searchVideos()">Search</button>
   </div>
 
+  <!-- Player Section -->
   <div class="player">
-    <iframe id="mainPlayer" src="" allowfullscreen></iframe>
+    <div id="player"></div>
     <div class="controls">
+      <button onclick="rewind()">⏪</button>
       <button onclick="togglePlay()">⏯️</button>
-      <button onclick="toggleMute()">🔇</button>
+      <button onclick="toggleMute()">🔈</button>
+      <button onclick="forward()">⏩</button>
       <button onclick="fullscreen()">⛶</button>
     </div>
   </div>
@@ -84,16 +87,29 @@
 
 <script>
   const apiKey = "AIzaSyCJ5f3o71_PJcI3q4NrdrtC7s9F2iVQVBw";
-  let currentVideo = null;
-  let playerFrame = document.getElementById("mainPlayer");
+  let player, currentVideo;
 
-  // --- Load Default Content ---
-  window.onload = () => searchVideos("Latest Pakistani Songs");
+  // Load IFrame Player API
+  let tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  document.body.appendChild(tag);
+
+  // Called by YouTube API when ready
+  function onYouTubeIframeAPIReady(){
+    player = new YT.Player('player', {
+      height:'390',
+      width:'640',
+      videoId:'',
+      playerVars:{'playsinline':1},
+    });
+    // Load default search
+    searchVideos("Latest Pakistani Songs");
+  }
 
   async function searchVideos(queryParam){
     const query = queryParam || document.getElementById("query").value.trim();
     if(!query) return alert("Please enter search term.");
-    document.getElementById("cards").innerHTML = "<p>Loading...</p>";
+    document.getElementById("cards").innerHTML="<p>Loading...</p>";
     try{
       const res = await fetch(
         `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${encodeURIComponent(query)}&key=${apiKey}`
@@ -102,18 +118,14 @@
       document.getElementById("cards").innerHTML="";
       if(!data.items) return alert("No results found.");
 
-      // Set first video to player
       currentVideo = data.items[0].id.videoId;
-      playerFrame.src = `https://www.youtube.com/embed/${currentVideo}?enablejsapi=1`;
+      player.loadVideoById(currentVideo);
 
-      // Show all videos as suggestions
       data.items.forEach(item=>{
         const vid = item.id.videoId;
-        const card = document.createElement("div");
+        const card=document.createElement("div");
         card.className="card";
-        card.innerHTML=`
-          <img src="${item.snippet.thumbnails.high.url}" alt="">
-          <h4>${item.snippet.title}</h4>`;
+        card.innerHTML=`<img src="${item.snippet.thumbnails.high.url}"/><h4>${item.snippet.title}</h4>`;
         card.onclick=()=>loadVideo(vid);
         document.getElementById("cards").appendChild(card);
       });
@@ -125,20 +137,28 @@
 
   function loadVideo(id){
     currentVideo=id;
-    playerFrame.src=`https://www.youtube.com/embed/${id}?enablejsapi=1`;
+    player.loadVideoById(id);
     window.scrollTo({top:0,behavior:'smooth'});
   }
 
-  // --- Basic Control Buttons (for UX look only) ---
+  // FAF button functions
   function togglePlay(){
-    // YouTube embed can't be controlled directly without IFrame API
-    alert("Play/Pause control limited for embeds; use player buttons.");
+    if(player.getPlayerState()==YT.PlayerState.PLAYING){ player.pauseVideo(); }
+    else { player.playVideo(); }
   }
-  function toggleMute(){
-    alert("Mute/Unmute available inside player controls.");
+  function toggleMute(){ 
+    if(player.isMuted()) player.unMute(); 
+    else player.mute(); 
+  }
+  function forward(){
+    let t=player.getCurrentTime(); player.seekTo(t+10,true);
+  }
+  function rewind(){
+    let t=player.getCurrentTime(); player.seekTo(t-10,true);
   }
   function fullscreen(){
-    playerFrame.requestFullscreen();
+    const iframe = player.getIframe();
+    if(iframe.requestFullscreen) iframe.requestFullscreen();
   }
 </script>
 </body>
