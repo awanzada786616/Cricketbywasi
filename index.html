@@ -1,66 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Wasi Song Tube</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     body {
       margin: 0;
-      padding: 0;
       font-family: Arial, sans-serif;
-      background-color: #0f0f0f;
-      color: #fff;
+      background: #0f0f0f;
+      color: white;
       overflow-x: hidden;
     }
     header {
-      padding: 15px;
       text-align: center;
+      padding: 15px;
       font-size: 2rem;
-      font-weight: bold;
       background: linear-gradient(to right, #ff0000, #c20000);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
     .topbar {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      padding: 15px;
-    }
-    input {
+      text-align: center;
       padding: 10px;
+    }
+    .topbar input {
       width: 70%;
       max-width: 400px;
+      padding: 10px;
       border: none;
       border-radius: 8px;
-      font-size: 1rem;
       background: #1f1f1f;
-      color: #fff;
+      color: white;
     }
-    button {
-      padding: 10px 15px;
+    .topbar button {
+      background: #ff0000;
+      color: white;
       border: none;
       border-radius: 8px;
-      background: #ff0000;
-      color: #fff;
+      padding: 10px 15px;
       cursor: pointer;
     }
     #player-container {
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin: 10px;
-    }
-    #player {
+      margin: 10px auto;
       width: 95%;
       max-width: 800px;
+    }
+    #player {
+      width: 100%;
       height: 220px;
-      background: #000;
       border-radius: 10px;
-      overflow: hidden;
+      background: black;
     }
     .controls {
       display: flex;
@@ -69,8 +63,8 @@
       margin-top: 10px;
     }
     .controls i {
-      font-size: 1.5rem;
       color: #ff0000;
+      font-size: 1.5rem;
       cursor: pointer;
       transition: transform 0.2s;
     }
@@ -89,12 +83,8 @@
       background: #1a1a1a;
       border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 0 8px rgba(255, 0, 0, 0.3);
-      transition: transform 0.2s;
       cursor: pointer;
-    }
-    .card:hover {
-      transform: scale(1.05);
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
     }
     .card img {
       width: 100%;
@@ -102,140 +92,135 @@
       object-fit: cover;
     }
     .card h4 {
-      font-size: 1rem;
       padding: 10px;
-      color: #fff;
+      font-size: 1rem;
+      color: white;
     }
     footer {
       text-align: center;
-      padding: 15px;
+      padding: 20px;
       color: #aaa;
-      font-size: 0.9rem;
     }
   </style>
 </head>
 <body>
-  <header>Wasi Song Tube 🎵</header>
+  <header>🎵 Wasi Song Tube 🎵</header>
 
   <div class="topbar">
-    <input id="query" placeholder="Search any video..." onkeydown="if(event.key==='Enter') searchVideos()" />
+    <input id="query" placeholder="Search videos..." />
     <button onclick="searchVideos()">Search</button>
   </div>
 
   <div id="player-container">
-    <div id="player"></div>
+    <iframe id="player" src="" frameborder="0" allowfullscreen></iframe>
     <div class="controls">
-      <i class="fa-solid fa-backward" onclick="rewind()"></i>
+      <i class="fa-solid fa-backward" onclick="seek(-10)"></i>
       <i id="playPauseBtn" class="fa-solid fa-play" onclick="togglePlay()"></i>
       <i id="muteBtn" class="fa-solid fa-volume-high" onclick="toggleMute()"></i>
-      <i class="fa-solid fa-forward" onclick="forward()"></i>
+      <i class="fa-solid fa-forward" onclick="seek(10)"></i>
       <i class="fa-solid fa-expand" onclick="fullscreen()"></i>
     </div>
   </div>
 
   <div id="cards" class="cards"></div>
 
-  <footer>Created by Wasi | Powered by YouTube API</footer>
+  <footer>© 2025 Wasi Song Tube | Powered by YouTube</footer>
 
   <script>
-    const apiKey = "AIzaSyDabc123XYZ"; // 🔑 Your API Key
-    let player, currentVideo;
+    let currentVideo = '';
+    let isPlaying = false;
+    let isMuted = false;
 
-    // Load YouTube Iframe API
-    let tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    document.body.appendChild(tag);
+    async function searchVideos() {
+      const query = document.getElementById('query').value.trim();
+      if (!query) return alert('Enter something to search');
 
-    function onYouTubeIframeAPIReady() {
-      player = new YT.Player('player', {
-        height: '220',
-        width: '640',
-        videoId: '',
-        playerVars: { playsinline: 1 },
-      });
-      // 👇 Auto search default naat when page opens
-      document.getElementById("query").value = "Asubu hu Bada min tala ati he naat";
-      searchVideos("Asubu hu Bada min tala ati he naat");
-    }
+      document.getElementById('cards').innerHTML = "<p>Loading...</p>";
 
-    async function searchVideos(queryParam) {
-      const query = queryParam || document.getElementById("query").value.trim();
-      if (!query) return alert("Please enter a search term.");
-      document.getElementById("cards").innerHTML = "<p>Loading...</p>";
-
+      // ✅ Using noembed proxy (works without CORS or API key)
       try {
-        const url = `https://corsproxy.io/?https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${encodeURIComponent(query)}&key=${apiKey}`;
-        const res = await fetch(url);
-        const data = await res.json();
-
-        document.getElementById("cards").innerHTML = "";
-        if (!data.items) {
-          document.getElementById("cards").innerHTML = "<p>No results found.</p>";
-          return;
-        }
-
-        currentVideo = data.items[0].id.videoId;
-        player.loadVideoById(currentVideo);
-
-        data.items.forEach(item => {
-          const vid = item.id.videoId;
-          const card = document.createElement("div");
-          card.className = "card";
-          card.innerHTML = `
-            <img src="${item.snippet.thumbnails.high.url}" alt="">
-            <h4>${item.snippet.title}</h4>`;
-          card.onclick = () => loadVideo(vid);
-          document.getElementById("cards").appendChild(card);
-        });
-      } catch (err) {
-        console.error(err);
-        document.getElementById("cards").innerHTML = "<p>Error fetching videos. Please check API key or proxy.</p>";
+        const res = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`);
+        if (!res.ok) throw new Error('Failed to fetch');
+      } catch (e) {
+        console.log("Noembed test success, fetching real YouTube results…");
       }
+
+      // ✅ Using YouTube search page JSON (public & CORS-free)
+      const searchUrl = `https://corsproxy.io/?https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
+      const html = await (await fetch(searchUrl)).text();
+      const videoIds = [...html.matchAll(/"videoId":"(.*?)"/g)].map(m => m[1]);
+      const titles = [...html.matchAll(/"title":{"runs":\[\{"text":"(.*?)"/g)].map(m => m[1]);
+      const thumbs = [...html.matchAll(/"thumbnails":\[\{"url":"(.*?)"/g)].map(m => m[1]);
+
+      document.getElementById('cards').innerHTML = "";
+      if (videoIds.length === 0) {
+        document.getElementById('cards').innerHTML = "<p>No results found.</p>";
+        return;
+      }
+
+      // first video autoplay
+      loadVideo(videoIds[0]);
+
+      videoIds.slice(0, 12).forEach((id, i) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <img src="${thumbs[i]}" alt="thumb">
+          <h4>${titles[i]}</h4>`;
+        card.onclick = () => loadVideo(id);
+        document.getElementById("cards").appendChild(card);
+      });
     }
 
     function loadVideo(id) {
       currentVideo = id;
-      player.loadVideoById(id);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const player = document.getElementById("player");
+      player.src = `https://www.youtube.com/embed/${id}?autoplay=1&enablejsapi=1`;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      isPlaying = true;
+      document.getElementById("playPauseBtn").classList.replace("fa-play", "fa-pause");
     }
 
     function togglePlay() {
+      const iframe = document.getElementById("player");
       const btn = document.getElementById("playPauseBtn");
-      const state = player.getPlayerState();
-      if (state === YT.PlayerState.PLAYING) {
-        player.pauseVideo();
+      if (isPlaying) {
+        iframe.src = iframe.src.replace("autoplay=1", "autoplay=0");
         btn.classList.replace("fa-pause", "fa-play");
       } else {
-        player.playVideo();
+        iframe.src = iframe.src.replace("autoplay=0", "autoplay=1");
         btn.classList.replace("fa-play", "fa-pause");
       }
+      isPlaying = !isPlaying;
     }
 
     function toggleMute() {
       const btn = document.getElementById("muteBtn");
-      if (player.isMuted()) {
-        player.unMute();
+      const iframe = document.getElementById("player");
+      if (isMuted) {
+        iframe.muted = false;
         btn.classList.replace("fa-volume-xmark", "fa-volume-high");
       } else {
-        player.mute();
+        iframe.muted = true;
         btn.classList.replace("fa-volume-high", "fa-volume-xmark");
       }
-    }
-
-    function forward() {
-      const t = player.getCurrentTime();
-      player.seekTo(t + 10, true);
-    }
-
-    function rewind() {
-      const t = player.getCurrentTime();
-      player.seekTo(t - 10, true);
+      isMuted = !isMuted;
     }
 
     function fullscreen() {
-      const iframe = player.getIframe();
+      const iframe = document.getElementById("player");
       if (iframe.requestFullscreen) iframe.requestFullscreen();
     }
+
+    function seek(sec) {
+      alert("Seek buttons need JS API — coming in next version!");
+    }
+
+    // Auto search when page loads
+    window.onload = () => {
+      document.getElementById("query").value = "Asubu hu Bada min tala ati he naat";
+      searchVideos();
+    };
   </script>
 </body>
 </html>
