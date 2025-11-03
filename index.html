@@ -138,7 +138,7 @@
   <footer>Created by Wasi | Powered by YouTube API</footer>
 
   <script>
-    const apiKey = "AIzaSyDabc123XYZ"; // 🔑 your YouTube API key here
+    const apiKey = "AIzaSyDabc123XYZ"; // 🔑 Your API Key
     let player, currentVideo;
 
     // Load YouTube Iframe API
@@ -153,7 +153,9 @@
         videoId: '',
         playerVars: { playsinline: 1 },
       });
-      searchVideos("Latest Pakistani Songs");
+      // 👇 Auto search default naat when page opens
+      document.getElementById("query").value = "Asubu hu Bada min tala ati he naat";
+      searchVideos("Asubu hu Bada min tala ati he naat");
     }
 
     async function searchVideos(queryParam) {
@@ -187,7 +189,7 @@
         });
       } catch (err) {
         console.error(err);
-        document.getElementById("cards").innerHTML = "<p>Error fetching data. API key may be restricted.</p>";
+        document.getElementById("cards").innerHTML = "<p>Error fetching videos. Please check API key or proxy.</p>";
       }
     }
 
