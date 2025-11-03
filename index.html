@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wasi Tube - Auto Search</title>
+  <title>Wasi Tube - Allah Hu Allah Hu Naat</title>
 
   <link
     rel="stylesheet"
@@ -155,10 +155,10 @@
 </head>
 
 <body>
-  <header>🎬 Wasi Tube</header>
+  <header>🎵 Wasi Tube</header>
 
   <div class="search-bar">
-    <input id="query" placeholder="Search any video..." value="Latest Pakistani Dramas"
+    <input id="query" placeholder="Search any video..." value="Allah Hu Allah Hu Naat"
       onkeydown="if(event.key==='Enter') searchVideos()" />
     <button onclick="searchVideos()">Search</button>
   </div>
@@ -196,8 +196,8 @@
       });
     }
 
-    async function searchVideos() {
-      const query = document.getElementById("query").value.trim();
+    async function searchVideos(queryParam) {
+      const query = queryParam || document.getElementById("query").value.trim();
       if (!query) return alert("Please enter a search keyword");
 
       document.getElementById("loader").style.display = "block";
@@ -273,7 +273,8 @@
       else if (iframe.msRequestFullscreen) iframe.msRequestFullscreen();
     });
 
-    window.onload = () => searchVideos("Latest Pakistani Dramas");
+    // 🔥 Auto search when page loads
+    window.onload = () => searchVideos("Allah Hu Allah Hu Naat");
   </script>
 </body>
 </html>
