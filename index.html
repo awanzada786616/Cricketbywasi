@@ -1,117 +1,95 @@
+<?php
+// =============================
+// PHP SECTION (acts as proxy)
+// =============================
+if (isset($_GET['fetch'])) {
+  header("Access-Control-Allow-Origin: *");
+  $api = "https://web.jazztv.pk/alpha/api_gateway/v3/web/all-channels";
+
+  $ch = curl_init($api);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch, CURLOPT_HEADER, false);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept: application/json'));
+  $data = curl_exec($ch);
+  $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+  $type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE) ?: 'application/json';
+  curl_close($ch);
+
+  header("Content-Type: $type", true, $code);
+  echo $data;
+  exit;
+}
+?>
+
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>All Channels</title>
-  <style>
-    body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:0;padding:20px;background:#f6f7fb}
-    h1{margin:0 0 16px;font-size:22px}
-    #status{margin-bottom:12px;color:#555}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
-    .card{background:#fff;border-radius:10px;padding:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;flex-direction:column;align-items:center;text-align:center}
-    .logo{width:120px;height:68px;object-fit:contain;margin-bottom:10px;background:#eef;padding:6px;border-radius:6px}
-    .title{font-weight:600;margin-bottom:8px}
-    .btn{display:inline-block;padding:8px 12px;border-radius:8px;text-decoration:none;border:1px solid #ddd;color:#333;font-size:14px}
-    .meta{font-size:12px;color:#666;margin-top:8px}
-    pre{white-space:pre-wrap;word-break:break-word;background:#fff3;padding:8px;border-radius:6px}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>All Channels - JazzTV API</title>
+<style>
+  body{font-family:Arial,Helvetica,sans-serif;background:#f5f7fa;margin:0;padding:20px;color:#222}
+  h1{margin:0 0 16px;font-size:22px;text-align:center}
+  #status{margin-bottom:16px;text-align:center;color:#555}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+  .card{background:#fff;border-radius:12px;padding:12px;box-shadow:0 4px 12px rgba(0,0,0,0.08);display:flex;flex-direction:column;align-items:center;transition:.2s}
+  .card:hover{transform:translateY(-3px);box-shadow:0 6px 14px rgba(0,0,0,0.12)}
+  .logo{width:120px;height:68px;object-fit:contain;margin-bottom:8px;background:#eef;padding:5px;border-radius:8px}
+  .title{font-weight:600;text-align:center;margin-bottom:6px;font-size:15px}
+  .btn{display:inline-block;padding:6px 12px;border-radius:8px;text-decoration:none;background:#0078d7;color:#fff;font-size:13px}
+  .btn:hover{background:#005bb5}
+  .meta{font-size:11px;color:#666;margin-top:6px}
+</style>
 </head>
 <body>
-  <h1>All Channels</h1>
-  <div id="status">Loading channels…</div>
-  <div id="channels" class="grid"></div>
+<h1>📺 Live JazzTV Channels</h1>
+<div id="status">Loading channels...</div>
+<div id="channels" class="grid"></div>
 
-  <script>
-    // --- CONFIG: replace if you use a proxy
-    const API_URL = "https://web.jazztv.pk/alpha/api_gateway/v3/web/all-channels";
-    // If you use a proxy on your server, set PROXY_URL to: e.g. "/api/channels" or "https://yourdomain.com/proxy"
-    const PROXY_URL = ""; // <- leave empty to call API_URL directly
+<script>
+async function loadChannels() {
+  const status = document.getElementById('status');
+  try {
+    status.textContent = 'Fetching channels from API...';
+    const res = await fetch('?fetch=1');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    renderChannels(data);
+    status.textContent = 'Channels loaded successfully ✅';
+  } catch (err) {
+    status.textContent = '❌ Failed to load channels: ' + err.message;
+    console.error(err);
+  }
+}
 
-    const target = PROXY_URL || API_URL;
+function renderChannels(payload) {
+  const container = document.getElementById('channels');
+  container.innerHTML = '';
+  const list = payload?.channels || payload?.data || payload || [];
+  if (!Array.isArray(list) || list.length === 0) {
+    container.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#777;">No channels found or wrong structure</div>';
+    console.log('Payload:', payload);
+    return;
+  }
 
-    async function loadChannels() {
-      const statusEl = document.getElementById('status');
-      try {
-        statusEl.textContent = 'Fetching channels from API…';
-        const res = await fetch(target, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-            // If API requires auth headers, add them here.
-          }
-        });
+  list.forEach(ch => {
+    const name = ch.name || ch.title || ch.channel_name || 'Unnamed';
+    const logo = ch.logo || ch.logo_url || ch.icon || '';
+    const stream = ch.stream_url || ch.stream || ch.url || '';
 
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status} ${res.statusText}`);
-        }
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `
+      <img class="logo" src="${logo || 'https://via.placeholder.com/150x80?text=No+Logo'}" alt="${name}">
+      <div class="title">${name}</div>
+      <a class="btn" href="${stream || '#'}" target="_blank">Watch Live</a>
+      <div class="meta">ID: ${ch.id ?? ch.channel_id ?? '-'}</div>
+    `;
+    container.appendChild(div);
+  });
+}
 
-        const data = await res.json();
-        renderChannels(data);
-        statusEl.textContent = 'Channels loaded.';
-      } catch (err) {
-        statusEl.innerHTML = `Failed to load channels: <strong>${err.message}</strong>.`;
-        statusEl.innerHTML += '<br/>If you see a CORS or 405 error, use the server-side proxy (example below).';
-        console.error(err);
-      }
-    }
-
-    // Render — adjust fields depending on actual API shape
-    function renderChannels(payload) {
-      const container = document.getElementById('channels');
-      container.innerHTML = '';
-
-      // Guessing the API returns { channels: [ { id, name, logo, stream_url, category } ] }
-      // If the structure is different, inspect payload in browser console and adapt below.
-      console.log('API payload:', payload);
-
-      // Try possible paths:
-      const list = payload?.channels || payload?.data || payload?.result || payload || [];
-
-      if (!Array.isArray(list) || list.length === 0) {
-        container.innerHTML = '<div style="grid-column:1/-1;color:#666">No channels found (or unexpected API structure). Check console for payload.</div>';
-        return;
-      }
-
-      list.forEach(ch => {
-        const name = ch.name || ch.title || ch.channel_name || "Unnamed";
-        const logo = ch.logo || ch.logo_url || ch.icon || "";
-        // try many possible stream fields
-        const stream = ch.stream_url || ch.stream || ch.url || (ch.playlist && ch.playlist[0]) || "";
-        const card = document.createElement('div');
-        card.className = 'card';
-
-        const img = document.createElement('img');
-        img.className = 'logo';
-        img.alt = name;
-        img.src = logo || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="240" height="135"><rect width="100%" height="100%" fill="%23e9eef8"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23999" font-size="14">No Logo</text></svg>';
-
-        const title = document.createElement('div');
-        title.className = 'title';
-        title.textContent = name;
-
-        const a = document.createElement('a');
-        a.className = 'btn';
-        a.href = stream || '#';
-        a.target = '_blank';
-        a.rel = 'noopener';
-        a.textContent = stream ? 'Open Stream' : 'No Stream';
-
-        const meta = document.createElement('div');
-        meta.className = 'meta';
-        meta.textContent = `ID: ${ch.id ?? ch.channel_id ?? '-'}`;
-
-        card.appendChild(img);
-        card.appendChild(title);
-        card.appendChild(a);
-        card.appendChild(meta);
-
-        container.appendChild(card);
-      });
-    }
-
-    loadChannels();
-  </script>
+loadChannels();
+</script>
 </body>
 </html>
