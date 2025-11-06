@@ -3,328 +3,115 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Image Enhance — API demo</title>
+  <title>All Channels</title>
   <style>
-    :root{
-      --bg:#0f1724; --card:#0b1220; --muted:#9aa4b2; --accent:#06b6d4;
-      --radius:12px;
-    }
-    body{
-      margin:0;
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background:linear-gradient(180deg,#071024 0%, #071b2f 100%);
-      color:#e6eef6;
-      display:flex; align-items:center; justify-content:center;
-      min-height:100vh; padding:24px;
-    }
-    .wrap{
-      width:100%;
-      max-width:980px;
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:var(--radius);
-      padding:20px;
-      box-shadow: 0 10px 30px rgba(2,6,23,0.7);
-      border:1px solid rgba(255,255,255,0.03);
-    }
-    h1{ margin:0 0 10px 0; font-size:20px;}
-    p.lead{ margin:0 0 16px 0; color:var(--muted); font-size:13px; }
-    .controls{
-      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
-      margin-bottom:14px;
-    }
-    input[type="url"]{
-      flex:1; min-width:220px;
-      background:transparent; border:1px solid rgba(255,255,255,0.06);
-      padding:10px 12px; border-radius:10px; color:inherit;
-      outline:none;
-    }
-    label.file-btn{
-      display:inline-flex; gap:8px; align-items:center;
-      background:rgba(255,255,255,0.03); padding:10px 12px; border-radius:10px;
-      cursor:pointer; border:1px solid rgba(255,255,255,0.03);
-      font-size:13px;
-    }
-    .row{
-      display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;
-    }
-    .card{
-      background:rgba(255,255,255,0.02); padding:12px; border-radius:12px;
-      min-height:240px; display:flex; flex-direction:column; align-items:center; justify-content:center;
-      border:1px solid rgba(255,255,255,0.02);
-    }
-    .card img{ max-width:100%; max-height:380px; border-radius:8px; display:block; }
-    .buttons{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
-    button{
-      background:linear-gradient(90deg,var(--accent), #0891b2);
-      border:none; color:#062528; padding:10px 12px; border-radius:10px; cursor:pointer; font-weight:600;
-    }
-    button.ghost{
-      background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.04);
-    }
-    .muted{ color:var(--muted); font-size:13px; margin-top:8px; text-align:center; }
-    .status{ font-size:13px; color:#cfeefb; margin-top:8px; }
-    .small{ font-size:12px; color:var(--muted); }
-    @media (max-width:800px){
-      .row{ grid-template-columns:1fr; }
-    }
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:0;padding:20px;background:#f6f7fb}
+    h1{margin:0 0 16px;font-size:22px}
+    #status{margin-bottom:12px;color:#555}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+    .card{background:#fff;border-radius:10px;padding:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;flex-direction:column;align-items:center;text-align:center}
+    .logo{width:120px;height:68px;object-fit:contain;margin-bottom:10px;background:#eef;padding:6px;border-radius:6px}
+    .title{font-weight:600;margin-bottom:8px}
+    .btn{display:inline-block;padding:8px 12px;border-radius:8px;text-decoration:none;border:1px solid #ddd;color:#333;font-size:14px}
+    .meta{font-size:12px;color:#666;margin-top:8px}
+    pre{white-space:pre-wrap;word-break:break-word;background:#fff3;padding:8px;border-radius:6px}
   </style>
 </head>
 <body>
-  <div class="wrap" role="main">
-    <h1>Image Enhance — API demo</h1>
-    <p class="lead">Use the API <code>https://image-enhance.apis-bj-devs.workers.dev/?imageurl=</code> to enhance an image by URL or by uploading a file (converted to a data URL).</p>
-
-    <div class="controls" aria-label="controls">
-      <input id="imageUrl" type="url" placeholder="Paste image URL here (or choose a file)" />
-      <label class="file-btn" title="Upload image">
-        📁 Choose file
-        <input id="fileInput" type="file" accept="image/*" style="display:none" />
-      </label>
-
-      <button id="enhanceBtn">Enhance image</button>
-      <button id="clearBtn" class="ghost">Clear</button>
-    </div>
-
-    <div class="row">
-      <div class="card" id="origCard">
-        <div style="width:100%; text-align:left;">
-          <div class="small">Original</div>
-        </div>
-        <div id="origPreview" style="width:100%; display:flex; align-items:center; justify-content:center; padding:8px;">
-          <div class="muted">No image selected</div>
-        </div>
-        <div id="origInfo" class="small muted" style="margin-top:8px;"></div>
-      </div>
-
-      <div class="card" id="enhancedCard">
-        <div style="width:100%; text-align:left;">
-          <div class="small">Enhanced</div>
-        </div>
-        <div id="enhancedPreview" style="width:100%; display:flex; align-items:center; justify-content:center; padding:8px;">
-          <div class="muted">Result will appear here</div>
-        </div>
-
-        <div class="buttons" style="margin-top:auto">
-          <a id="downloadBtn" style="display:none; text-decoration:none;">
-            <button id="downloadAction">Download</button>
-          </a>
-          <button id="openNew" class="ghost" style="display:none">Open in new tab</button>
-          <div id="status" class="status" style="margin-left:auto"></div>
-        </div>
-      </div>
-    </div>
-
-    <p class="small" style="margin-top:12px">
-      Note: If the API or the image host blocks cross-origin requests (CORS), the enhancement call may fail in the browser. If that happens, you can run a small server-side proxy or use a CORS-enabled host. Also some APIs accept data URLs directly and some reject them — this code attempts both.
-    </p>
-  </div>
+  <h1>All Channels</h1>
+  <div id="status">Loading channels…</div>
+  <div id="channels" class="grid"></div>
 
   <script>
-    const apiBase = 'https://image-enhance.apis-bj-devs.workers.dev/?imageurl=';
-    const imageUrlInput = document.getElementById('imageUrl');
-    const fileInput = document.getElementById('fileInput');
-    const enhanceBtn = document.getElementById('enhanceBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    const origPreview = document.getElementById('origPreview');
-    const enhancedPreview = document.getElementById('enhancedPreview');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const downloadAction = document.getElementById('downloadAction');
-    const openNew = document.getElementById('openNew');
-    const statusEl = document.getElementById('status');
-    const origInfo = document.getElementById('origInfo');
+    // --- CONFIG: replace if you use a proxy
+    const API_URL = "https://web.jazztv.pk/alpha/api_gateway/v3/web/all-channels";
+    // If you use a proxy on your server, set PROXY_URL to: e.g. "/api/channels" or "https://yourdomain.com/proxy"
+    const PROXY_URL = ""; // <- leave empty to call API_URL directly
 
-    let lastEnhancedUrl = null;
-    let currentSourceUrl = null; // could be http(s) or data:image/...
-    let currentFilename = 'enhanced-image.png';
+    const target = PROXY_URL || API_URL;
 
-    // helper to show status
-    function setStatus(text, isError=false){
-      statusEl.textContent = text || '';
-      statusEl.style.color = isError ? '#ffb4b4' : '#cfeefb';
-    }
+    async function loadChannels() {
+      const statusEl = document.getElementById('status');
+      try {
+        statusEl.textContent = 'Fetching channels from API…';
+        const res = await fetch(target, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            // If API requires auth headers, add them here.
+          }
+        });
 
-    // preview helpers
-    function showOriginalPreview(src){
-      origPreview.innerHTML = '';
-      const img = document.createElement('img');
-      img.src = src;
-      img.alt = 'Original image';
-      img.onload = () => {
-        const w = img.naturalWidth;
-        const h = img.naturalHeight;
-        origInfo.textContent = `${w} × ${h} — ${Math.round(img.size || 0)}px`;
-      };
-      img.onerror = () => {
-        origInfo.textContent = '';
-      };
-      origPreview.appendChild(img);
-    }
-    function showEnhancedPreview(src){
-      enhancedPreview.innerHTML = '';
-      const img = document.createElement('img');
-      img.src = src;
-      img.alt = 'Enhanced image';
-      enhancedPreview.appendChild(img);
-    }
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status} ${res.statusText}`);
+        }
 
-    // file input -> data URL
-    fileInput.addEventListener('change', async (e) => {
-      const file = e.target.files && e.target.files[0];
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        const dataUrl = reader.result;
-        imageUrlInput.value = ''; // clear URL input to avoid confusion
-        currentSourceUrl = dataUrl;
-        currentFilename = file.name.replace(/\.[^/.]+$/, "") + '-enhanced.png';
-        showOriginalPreview(dataUrl);
-        setStatus('File loaded. Click Enhance to call the API.');
-      };
-      reader.onerror = () => setStatus('Failed to read the file.', true);
-      reader.readAsDataURL(file);
-    });
-
-    // clicking the "choose file" label will open file dialog (input is hidden)
-    document.querySelector('.file-btn').addEventListener('click', () => {
-      fileInput.click();
-    });
-
-    // pressing Enhance
-    enhanceBtn.addEventListener('click', async () => {
-      setStatus('');
-      // determine source: either URL input or file data URL
-      const urlValue = imageUrlInput.value && imageUrlInput.value.trim();
-      if(urlValue){
-        currentSourceUrl = urlValue;
-        currentFilename = (new URL(urlValue, location.href).pathname.split('/').pop() || 'image') + '-enhanced.png';
-        showOriginalPreview(urlValue);
+        const data = await res.json();
+        renderChannels(data);
+        statusEl.textContent = 'Channels loaded.';
+      } catch (err) {
+        statusEl.innerHTML = `Failed to load channels: <strong>${err.message}</strong>.`;
+        statusEl.innerHTML += '<br/>If you see a CORS or 405 error, use the server-side proxy (example below).';
+        console.error(err);
       }
-      if(!currentSourceUrl){
-        setStatus('Please paste an image URL or choose a file first.', true);
+    }
+
+    // Render — adjust fields depending on actual API shape
+    function renderChannels(payload) {
+      const container = document.getElementById('channels');
+      container.innerHTML = '';
+
+      // Guessing the API returns { channels: [ { id, name, logo, stream_url, category } ] }
+      // If the structure is different, inspect payload in browser console and adapt below.
+      console.log('API payload:', payload);
+
+      // Try possible paths:
+      const list = payload?.channels || payload?.data || payload?.result || payload || [];
+
+      if (!Array.isArray(list) || list.length === 0) {
+        container.innerHTML = '<div style="grid-column:1/-1;color:#666">No channels found (or unexpected API structure). Check console for payload.</div>';
         return;
       }
 
-      setStatus('Requesting enhancement...');
-      downloadBtn.style.display = 'none';
-      openNew.style.display = 'none';
-      lastEnhancedUrl = null;
+      list.forEach(ch => {
+        const name = ch.name || ch.title || ch.channel_name || "Unnamed";
+        const logo = ch.logo || ch.logo_url || ch.icon || "";
+        // try many possible stream fields
+        const stream = ch.stream_url || ch.stream || ch.url || (ch.playlist && ch.playlist[0]) || "";
+        const card = document.createElement('div');
+        card.className = 'card';
 
-      try {
-        // Build request URL. encodeURIComponent is required.
-        let encoded = encodeURIComponent(currentSourceUrl);
-        let requestUrl = apiBase + encoded;
+        const img = document.createElement('img');
+        img.className = 'logo';
+        img.alt = name;
+        img.src = logo || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="240" height="135"><rect width="100%" height="100%" fill="%23e9eef8"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23999" font-size="14">No Logo</text></svg>';
 
-        // Attempt fetch as blob (most likely the API returns an image directly)
-        const resp = await fetch(requestUrl, {
-          method: 'GET',
-          // mode: 'cors' // default - keep as default
-        });
+        const title = document.createElement('div');
+        title.className = 'title';
+        title.textContent = name;
 
-        // If the response is JSON with a URL field, handle it
-        const ctype = resp.headers.get('content-type') || '';
-        if(resp.ok && ctype.includes('application/json')){
-          const json = await resp.json();
-          // Try to find an image URL in common fields
-          const possible = json.result || json.url || json.image || json.output || json.data || json.enhanced;
-          if(typeof possible === 'string'){
-            lastEnhancedUrl = possible;
-          } else {
-            // Flatten to string if possible
-            lastEnhancedUrl = JSON.stringify(json).slice(0,200);
-          }
-        } else if(resp.ok && (ctype.startsWith('image/') || ctype.includes('octet-stream'))){
-          // got image blob directly
-          const blob = await resp.blob();
-          lastEnhancedUrl = URL.createObjectURL(blob);
-        } else if(!resp.ok){
-          // server returned an error status; try to parse text for message
-          let txt = await resp.text();
-          setStatus(`Server error: ${resp.status} ${resp.statusText} — ${txt.slice(0,200)}`, true);
-          return;
-        } else {
-          // unknown content-type: try to read as text
-          const maybeText = await resp.text();
-          // if it looks like a URL, use it
-          if(maybeText.startsWith('http') || maybeText.startsWith('data:image')){
-            lastEnhancedUrl = maybeText.trim();
-          } else {
-            setStatus('Received unknown response from API. See console for details.', true);
-            console.error('API response:', maybeText);
-            return;
-          }
-        }
+        const a = document.createElement('a');
+        a.className = 'btn';
+        a.href = stream || '#';
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.textContent = stream ? 'Open Stream' : 'No Stream';
 
-        if(!lastEnhancedUrl){
-          setStatus('Could not obtain enhanced image URL from API response.', true);
-          return;
-        }
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        meta.textContent = `ID: ${ch.id ?? ch.channel_id ?? '-'}`;
 
-        // show preview
-        showEnhancedPreview(lastEnhancedUrl);
-        setStatus('Done.');
+        card.appendChild(img);
+        card.appendChild(title);
+        card.appendChild(a);
+        card.appendChild(meta);
 
-        // prepare download button
-        downloadBtn.style.display = 'inline-block';
-        openNew.style.display = 'inline-block';
-        downloadBtn.href = lastEnhancedUrl;
-        // force download filename if blob URL: create an anchor with download attribute
-        downloadBtn.setAttribute('download', currentFilename);
-        downloadAction.onclick = () => {
-          // if it's a blob URL or data URL, clicking the anchor will download
-          downloadBtn.click();
-        };
-        openNew.onclick = () => {
-          if(lastEnhancedUrl.startsWith('data:') || lastEnhancedUrl.startsWith('blob:')){
-            window.open(lastEnhancedUrl, '_blank');
-          } else {
-            // try to open external URL in new tab
-            window.open(lastEnhancedUrl, '_blank', 'noopener');
-          }
-        };
+        container.appendChild(card);
+      });
+    }
 
-      } catch (err){
-        console.error(err);
-        // Common cause: CORS block, network error
-        const msg = err && err.message ? err.message : String(err);
-        setStatus('Request failed: ' + msg + '. (CORS or network?)', true);
-      }
-    });
-
-    clearBtn.addEventListener('click', () => {
-      imageUrlInput.value = '';
-      fileInput.value = '';
-      currentSourceUrl = null;
-      currentFilename = 'enhanced-image.png';
-      origPreview.innerHTML = '<div class="muted">No image selected</div>';
-      enhancedPreview.innerHTML = '<div class="muted">Result will appear here</div>';
-      downloadBtn.style.display = 'none';
-      openNew.style.display = 'none';
-      origInfo.textContent = '';
-      setStatus('');
-    });
-
-    // If user pastes a URL, preview automatically
-    imageUrlInput.addEventListener('change', () => {
-      const v = imageUrlInput.value && imageUrlInput.value.trim();
-      if(!v) return;
-      // basic check: if it's not a URL, skip
-      try{
-        const u = new URL(v, location.href);
-        currentSourceUrl = u.href;
-        showOriginalPreview(currentSourceUrl);
-        setStatus('URL set. Click Enhance to call the API.');
-      } catch(e){
-        setStatus('Invalid URL.', true);
-      }
-    });
-
-    // small UX: allow pressing Enter while focused on URL to trigger enhance
-    imageUrlInput.addEventListener('keydown', (e) => {
-      if(e.key === 'Enter') {
-        e.preventDefault();
-        enhanceBtn.click();
-      }
-    });
+    loadChannels();
   </script>
 </body>
 </html>
