@@ -664,7 +664,7 @@
             </div>
         </section>
         <section class="download-section" id="download">
-            <div class="container">
+                        <div class="container">
                 <h2 class="section-title fade-in">Download Now</h2>
                 <div class="app-showcase">
                     <img src="https://i.ibb.co/N6jStmwz/Screenshot-20260118-083252.jpg" alt="App Preview 1" class="app-preview fade-in delay-1">
@@ -674,4 +674,144 @@
                     <div class="app-info fade-in delay-2">
                         <h3 class="info-title"><i class="fas fa-info-circle"></i> App Information</h3>
                         <div class="info-item">
-                            <span class="info-label">Version:</span> <span class="info-value">1.0</spa
+                            <span class="info-label">Version:</span> <span class="info-value">1.0</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Release Date:</span> <span class="info-value">17/01/2026</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">App Size:</span> <span class="info-value">9.12 MB</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Requirements:</span> <span class="info-value">Android 4.4+</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="download-links">
+                    <a href="https://wasixyoutubeviewsbooster.vercel.app/app-release (1).apk" class="download-btn fade-in delay-2">
+                        <span class="download-badge">Alternative</span>
+                        <img src="https://i.postimg.cc/HnhjY27J/20221230-082929.png" alt="MediaFire" class="btn-icon">
+                        <span class="btn-text">MediaFire</span>
+                        <span class="btn-subtext">Alternative Download Link</span>
+                    </a>
+
+                    
+
+                    <a href="https://wasixyoutubeviewsbooster.vercel.app/app-release (1).apk" class="download-btn fade-in delay-2">
+                        <span class="download-badge">Mirror Link</span>
+                        <i class="fab fa-google-drive btn-icon" style="font-size: 80px; color: #4285F4;"></i>
+                        <span class="btn-text">Google Drive</span>
+                        <span class="btn-subtext">Secure Mirror Download</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+        <section class="features-section">
+            <div class="container">
+                <h2 class="section-title fade-in">Why Choose Wasi-Otp?</h2>
+                <div class="features-grid">
+                    <div class="feature-card fade-in delay-1">
+                        <div class="feature-icon">
+                            <i class="fas fa-tv"></i>
+                        </div>
+                        <h3 class="feature-title">Virtual numbers</h3>
+                        <p class="feature-desc">Access dozens of numbers just in 1 click</p>
+                    </div>
+                    <div class="feature-card fade-in delay-2">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile"></i>
+                        </div>
+                        <h3 class="feature-title">Canel and refund policy</h3>
+                        <p class="feature-desc">If number is not available just cancel it and get instant refund</p>
+                    </div>
+                    <div class="feature-card fade-in delay-3">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h3 class="feature-title">Fast & Smooth</h3>
+                        <p class="feature-desc">Optimized for low-bandwidth connections</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="whatsapp-section">
+            <div class="container">
+                <div class="whatsapp-content">
+                    <h2 class="section-title fade-in">Join Our Community</h2>
+                    <p class="whatsapp-desc fade-in delay-1">Stay updated with the latest news, updates, and new numbers additions</p>
+                    <a href="https://whatsapp.com/channel/0029Vb75PUl4NViorkmONR0T" class="whatsapp-btn fade-in delay-2" target="_blank">
+                        <i class="fab fa-whatsapp whatsapp-icon"></i> Join WhatsApp channel
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="social-links">
+                    <a href="https://www.facebook.com/mrdoctor" class="social-link" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://youtube.com/@awaishaidermunara" class="social-link" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="https://t.me/@aloneboywasi" class="social-link" target="_blank" aria-label="Telegram"><i class="fab fa-telegram-plane"></i></a>
+                </div>
+                <p class="copyright">© 2026 All rights reserved awais develpor</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        // Enhanced animations and interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            const fadeElements = document.querySelectorAll('.fade-in');
+            
+            const fadeInOnScroll = function() {
+                fadeElements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const elementVisible = 150;
+                    
+                    if (elementTop < window.innerHeight - elementVisible) {
+                        element.style.opacity = 1;
+                        element.style.transform = 'translateY(0)';
+                    }
+                });
+            };
+            
+            // Set initial state
+            fadeElements.forEach(element => {
+                element.style.opacity = 0;
+                element.style.transform = 'translateY(30px)';
+                element.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+            });
+            
+            // Check on load
+            fadeInOnScroll();
+            
+            // Check on scroll
+            window.addEventListener('scroll', fadeInOnScroll);
+            
+            // Add ripple effect to buttons
+            const buttons = document.querySelectorAll('.download-btn, .whatsapp-btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.classList.add('ripple');
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
