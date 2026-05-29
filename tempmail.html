@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temporary Mail</title>
+    <!-- Icons ke liye FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-green: #2ecc71;
+            --dark-green: #27ae60;
+            --bg-color: #f8f9fa;
+            --text-dark: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 450px;
+            min-height: 100vh;
+            background: white;
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--text-dark);
+        }
+
+        /* Main Green Card */
+        .main-card {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            margin: 15px;
+            padding: 20px;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 10px 20px rgba(46, 204, 113, 0.2);
+        }
+
+        .label-text { font-size: 0.9rem; margin-bottom: 10px; opacity: 0.9; }
+
+        .email-display-wrapper {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .email-text {
+            font-weight: 600;
+            font-size: 1rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-right: 10px;
+        }
+
+        .action-icons { display: flex; gap: 10px; }
+        .icon-btn {
+            background: white;
+            color: var(--dark-green);
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+        }
+
+        .card-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .secondary-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+        .secondary-btn:active { background: rgba(255, 255, 255, 0.3); }
+
+        /* Custom Prefix Card */
+        .prefix-card {
+            background: white;
+            margin: 15px;
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid #eee;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+
+        .prefix-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-dark);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #eee;
+            background: #f9f9f9;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        .set-btn {
+            background: var(--primary-green);
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Inbox Section */
+        .inbox-header {
+            margin: 20px 15px 10px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .empty-inbox {
+            text-align: center;
+            padding: 50px 20px;
+            color: #888;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            color: #e0f2f1;
+            margin-bottom: 15px;
+        }
+
+        /* Toast Notification */
+        #toast {
+            visibility: hidden;
+            background-color: #222;
+            color: #fff;
+            text-align: center;
+            border-radius: 10px;
+            padding: 12px 20px;
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            font-size: 0.9rem;
+        }
+
+        #toast.show { visibility: visible; animation: fadeInOut 2.5s; }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; bottom: 10px; }
+            15% { opacity: 1; bottom: 30px; }
+            85% { opacity: 1; bottom: 30px; }
+            100% { opacity: 0; bottom: 10px; }
+        }
+
+        .mail-list { margin: 0 15px; }
+        .mail-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Header -->
+    <div class="header">
+        <i class="fa-solid fa-chevron-left"></i>
+        <span>Temporary Mail</span>
+        <i class="fa-solid fa-ellipsis"></i>
+    </div>
+
+    <!-- Green Card -->
+    <div class="main-card">
+        <div class="label-text">Your Temp Email</div>
+        <div class="email-display-wrapper">
+            <i class="fa-regular fa-envelope"></i>
+            <div class="email-text" id="email-addr">Loading...</div>
+            <div class="action-icons">
+                <button class="icon-btn" onclick="copyEmail()"><i class="fa-regular fa-copy"></i></button>
+                <button class="icon-btn"><i class="fa-solid fa-share-nodes"></i></button>
+            </div>
+        </div>
+        <div class="card-buttons">
+            <button class="secondary-btn" onclick="generateNewEmail()">
+                <i class="fa-solid fa-arrows-rotate"></i> Generate New
+            </button>
+            <button class="secondary-btn" onclick="fetchMessages()">
+                <i class="fa-solid fa-rotate"></i> Refresh Inbox
+            </button>
+        </div>
+    </div>
+
+    <!-- Custom Prefix -->
+    <div class="prefix-card">
+        <div class="prefix-title">
+            <i class="fa-solid fa-pen-to-square" style="color: var(--primary-green);"></i>
+            Custom Email Prefix
+        </div>
+        <div class="input-group">
+            <input type="text" id="custom-prefix" placeholder="e.g., myname123">
+            <button class="set-btn" onclick="setCustomEmail()">Set</button>
+        </div>
+    </div>
+
+    <!-- Inbox -->
+    <div class="inbox-header">
+        <i class="fa-regular fa-image" style="color: var(--primary-green);"></i> Inbox
+    </div>
+
+    <div id="inbox-container">
+        <div class="empty-inbox">
+            <div class="empty-icon"><i class="fa-regular fa-envelope-open"></i></div>
+            <h3 style="color:#333; margin:0;">No Messages Yet</h3>
+            <p style="font-size:0.9rem; line-height:1.4;">Waiting for incoming emails...<br>Your temporary email is ready to receive messages.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toast">New temporary email generated</div>
+
+<script>
+    let user = "";
+    let domain = "1secmail.com";
+
+    function showToast(msg) {
+        const toast = document.getElementById("toast");
+        toast.innerText = msg;
+        toast.className = "show";
+        setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 2500);
+    }
+
+    function generateNewEmail() {
+        user = Math.random().toString(36).substring(2, 12);
+        updateUI();
+        showToast("New temporary email generated");
+    }
+
+    function setCustomEmail() {
+        const prefix = document.getElementById('custom-prefix').value.trim();
+        if(prefix.length > 2) {
+            user = prefix;
+            updateUI();
+            showToast("Custom email set!");
+        } else {
+            alert("Please enter at least 3 characters");
+        }
+    }
+
+    function updateUI() {
+        document.getElementById('email-addr').innerText = `${user}@${domain}`;
+        document.getElementById('inbox-container').innerHTML = `
+            <div class="empty-inbox">
+                <div class="empty-icon"><i class="fa-regular fa-envelope-open"></i></div>
+                <h3 style="color:#333; margin:0;">No Messages Yet</h3>
+                <p style="font-size:0.9rem;">Waiting for incoming emails...</p>
+            </div>`;
+    }
+
+    function copyEmail() {
+        const email = document.getElementById('email-addr').innerText;
+        navigator.clipboard.writeText(email);
+        showToast("Email copied to clipboard!");
+    }
+
+    async function fetchMessages() {
+        try {
+            const res = await fetch(`https://www.1secmail.com/api/v1/?action=getMessages&login=${user}&domain=${domain}`);
+            const mails = await res.json();
+            const container = document.getElementById('inbox-container');
+            
+            if(mails.length > 0) {
+                container.innerHTML = "";
+                mails.forEach(m => {
+                    container.innerHTML += `
+                        <div class="mail-item" onclick="alert('Body checking logic can be added here')">
+                            <strong>${m.from}</strong><br>
+                            <span style="color: #666; font-size:0.9rem;">${m.subject}</span>
+                        </div>`;
+                });
+            } else {
+                showToast("No new messages");
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    // Initialize
+    generateNewEmail();
+    setInterval(fetchMessages, 15000); // Auto check 15s
+</script>
+
+</body>
+</html>
