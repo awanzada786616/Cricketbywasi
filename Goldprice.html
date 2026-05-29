@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gold Price Live Dashboard</title>
+    <!-- Chart.js for Graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --dark-gold: #B8860B;
+            --bg: #f0f2f5;
+            --white: #ffffff;
+            --text: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 0;
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        /* Header Section */
+        header {
+            text-align: center;
+            padding: 20px 0;
+            background: linear-gradient(135deg, #222, #444);
+            color: var(--gold);
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Price Cards */
+        .price-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-top: 5px solid var(--gold);
+        }
+
+        .card h3 { margin: 0; font-size: 14px; color: #777; text-transform: uppercase; }
+        .card .price { font-size: 24px; font-weight: bold; margin: 10px 0; color: var(--dark-gold); }
+        .card .trend { font-size: 12px; color: #28a745; }
+
+        /* Graph Section */
+        .graph-container {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        /* Enjoying App Popup Modal */
+        #popup-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none; /* Initially Hidden */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            width: 80%;
+            max-width: 350px;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .popup-card h2 { margin-top: 0; color: var(--dark-gold); }
+        .btn-group { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+        
+        .btn {
+            padding: 10px 30px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-yes { background: var(--gold); color: white; }
+        .btn-no { background: #eee; color: #555; }
+        .btn:hover { opacity: 0.8; }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1><i class="fa-solid fa-coins"></i> Live Gold Price</h1>
+    <p id="current-date">Fetching date...</p>
+</header>
+
+<div class="container">
+    <!-- Live Prices -->
+    <div class="price-grid">
+        <div class="card">
+            <h3>24K Gold (10g)</h3>
+            <div class="price" id="gold-24k">Rs. 215,400</div>
+            <div class="trend"><i class="fa-solid fa-caret-up"></i> +0.45% Today</div>
+        </div>
+        <div class="card">
+            <h3>22K Gold (10g)</h3>
+            <div class="price" id="gold-22k">Rs. 197,450</div>
+            <div class="trend"><i class="fa-solid fa-caret-up"></i> +0.32% Today</div>
+        </div>
+    </div>
+
+    <!-- Live Graph -->
+    <div class="graph-container">
+        <h3>Price Trend (Last 7 Days)</h3>
+        <canvas id="goldChart"></canvas>
+    </div>
+
+    <!-- Notification Style Info -->
+    <div style="background: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; border-radius: 10px; font-size: 14px;">
+        <strong>Note:</strong> Gold prices change every minute. These are estimated international market rates.
+    </div>
+</div>
+
+<!-- Modal Popup -->
+<div id="popup-overlay">
+    <div class="popup-card">
+        <div style="font-size: 50px; margin-bottom: 15px;">😊</div>
+        <h2>Enjoying the App?</h2>
+        <p>Aapko hamari Gold Price app pasand aa rahi hai?</p>
+        <div class="btn-group">
+            <button class="btn btn-yes" onclick="closePopup('Shukriya!')">Yes</button>
+            <button class="btn btn-no" onclick="closePopup('Afsos! Hum behtar banayenge.')">No</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. Date update
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('current-date').innerText = new Date().toLocaleDateString('en-US', options);
+
+    // 2. Chart.js Implementation
+    const ctx = document.getElementById('goldChart').getContext('2d');
+    const goldChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Price in PKR (Lakhs)',
+                data: [2.10, 2.12, 2.11, 2.14, 2.13, 2.15, 2.16],
+                borderColor: '#D4AF37',
+                backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: false } }
+        }
+    });
+
+    // 3. Simulated Live Update
+    function updatePrices() {
+        let base24k = 215400;
+        let randomMove = (Math.random() * 100).toFixed(0);
+        document.getElementById('gold-24k').innerText = "Rs. " + (base24k + parseInt(randomMove)).toLocaleString();
+        document.getElementById('gold-22k').innerText = "Rs. " + (base24k - 18000 + parseInt(randomMove)).toLocaleString();
+    }
+    setInterval(updatePrices, 5000); // Har 5 second baad price thora hilega (live look)
+
+    // 4. Popup Logic
+    setTimeout(() => {
+        document.getElementById('popup-overlay').style.display = 'flex';
+    }, 5000); // App khulne ke 5 second baad popup aayega
+
+    function closePopup(msg) {
+        alert(msg);
+        document.getElementById('popup-overlay').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
