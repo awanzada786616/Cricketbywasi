@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro QR Scanner</title>
+    <!-- Library Import -->
+    <script src="https://unpkg.com/html5-qr-code"></script>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --bg-color: #f4f7f6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header {
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .scanner-container {
+            width: 90%;
+            max-width: 500px;
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        #reader {
+            width: 100%;
+            border-radius: 15px;
+            overflow: hidden;
+            border: none !important;
+        }
+
+        /* Scanning Line Animation */
+        .scan-region-highlight {
+            border-radius: 15px !important;
+            outline: 2px solid var(--primary-color) !important;
+        }
+
+        /* Result Section */
+        .result-card {
+            width: 90%;
+            max-width: 500px;
+            background: white;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            display: none; /* Shuru mein hide hoga */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            word-break: break-all;
+        }
+
+        .result-card h3 { margin-top: 0; color: var(--primary-color); }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary-color);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .btn-copy { background: #28a745; margin-top: 10px; }
+
+        #status {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h2>🚀 Pro QR Scanner</h2>
+</div>
+
+<div class="scanner-container">
+    <div id="reader"></div>
+    <div id="status">Camera permission ka intezar hai...</div>
+    <button class="btn" id="start-btn" onclick="startScanner()">Start Camera</button>
+    <button class="btn" style="background: #dc3545; display: none;" id="stop-btn" onclick="stopScanner()">Stop Scanner</button>
+</div>
+
+<!-- Scan Result -->
+<div class="result-card" id="result-card">
+    <h3>Scan Result:</h3>
+    <div id="result-text" style="background: #f9f9f9; padding: 10px; border-radius: 5px; border: 1px solid #ddd;"></div>
+    <button class="btn btn-copy" onclick="copyResult()">Copy Result</button>
+    <button class="btn" style="background: #6c757d;" onclick="resetScanner()">Scan Again</button>
+</div>
+
+<script>
+    const html5QrCode = new Html5Qrcode("reader");
+    const resultCard = document.getElementById('result-card');
+    const resultText = document.getElementById('result-text');
+    const startBtn = document.getElementById('start-btn');
+    const stopBtn = document.getElementById('stop-btn');
+    const statusText = document.getElementById('status');
+
+    const qrConfig = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+    async function startScanner() {
+        try {
+            startBtn.style.display = 'none';
+            stopBtn.style.display = 'block';
+            statusText.innerText = "Scanning...";
+
+            await html5QrCode.start(
+                { facingMode: "environment" }, // Back camera use karega
+                qrConfig,
+                (decodedText) => {
+                    // Success! QR code mil gaya
+                    onScanSuccess(decodedText);
+                },
+                (errorMessage) => {
+                    // Scanning ho rahi hai par code nahi mila (isey khali chor dein)
+                }
+            );
+        } catch (err) {
+            console.error("Camera error:", err);
+            statusText.innerText = "Error: Camera access nahi mila.";
+            startBtn.style.display = 'block';
+            stopBtn.style.display = 'none';
+        }
+    }
+
+    function onScanSuccess(decodedText) {
+        // Vibrate phone (kuch browsers support karte hain)
+        if (navigator.vibrate) navigator.vibrate(100);
+
+        // UI Update
+        stopScanner();
+        resultCard.style.display = 'block';
+        resultText.innerText = decodedText;
+        
+        // Agar result link hai to click-able bana dein
+        if(decodedText.startsWith('http')) {
+            resultText.innerHTML = `<a href="${decodedText}" target="_blank">${decodedText}</a>`;
+        }
+    }
+
+    async function stopScanner() {
+        if(html5QrCode.isScanning) {
+            await html5QrCode.stop();
+            startBtn.style.display = 'block';
+            stopBtn.style.display = 'none';
+            statusText.innerText = "Scanner stopped.";
+        }
+    }
+
+    function resetScanner() {
+        resultCard.style.display = 'none';
+        startScanner();
+    }
+
+    function copyResult() {
+        const text = document.getElementById('result-text').innerText;
+        navigator.clipboard.writeText(text);
+        alert("Copy ho gaya!");
+    }
+</script>
+
+</body>
+  </html>
